@@ -24,7 +24,6 @@ public class Voting extends JPanel{
 	//						    (long)1614279462482.0, (long)870294433786.0, (long)1527328302699.0, (long)1199872938897.0, (long)34133333333.0};
 	//public int[] seats =   {125,                   55,                   40,                    115,                   46,
 	//						  107,                   198,                  187,                   147,                   4    };
-	//population by ten thousands
 	public long population = 10000;
 	public long[] regions = new long[region];
 	public int[] seats = new int[region]; 
@@ -114,6 +113,11 @@ public class Voting extends JPanel{
 				parties[i][j] = parties[i][j]/count;
 			}
 		}
+	}
+	
+	//generate an empty voting stats set
+	public Voting(boolean usingInput){
+		
 	}
 
 	public static void main(String [] args) throws InterruptedException {
@@ -212,7 +216,7 @@ public class Voting extends JPanel{
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		g.drawString("" + count*10000,25,500);
+		g.drawString("" + count,25,500);
 		int sum = 0;
 		for(int i = 0; i < party; i++){
 			sum += gov[i];
