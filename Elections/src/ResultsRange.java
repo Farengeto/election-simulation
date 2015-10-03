@@ -3,7 +3,7 @@ import java.util.Random;
 //Runs the election simulator repeatedly and outputs the estimated election results to 2 standard deviations
 public class ResultsRange {
 	public int tests = 0;
-	public int maxTests = 1000;
+	public int maxTests = 10000;
 	public int parties = 9;
 	public double[] max       = new double[parties];
 	public double[] high      = new double[parties];
@@ -17,18 +17,24 @@ public class ResultsRange {
 	public double[] vaverage   = new double[parties];
 	public double[] vlow       = new double[parties];
 	public double[] vmin       = new double[parties];
-	public int[][] vresults = new int[maxTests][parties];
+	public long[][] vresults = new long[maxTests][parties];
+	public UpdatedVoting polls;
 	
 	public ResultsRange(){
+		polls = new UpdatedVoting();
+		parties = polls.getPartyNum();
+		reset();
 	}
 	
 	public static void main(String [] args){
 		ResultsRange sample = new ResultsRange();
 		while(sample.tests < sample.maxTests){
-			StatsUpdate voting = new StatsUpdate();
-			voting.election();
-			sample.results[sample.tests] = voting.exportSeats();
-			sample.vresults[sample.tests] = voting.exportPolls();
+			sample.polls = new UpdatedVoting();
+			sample.polls.update(0.10);
+			sample.polls.voting();
+			sample.results[sample.tests] = sample.polls.getSeats();
+			sample.vresults[sample.tests] = sample.polls.getVotes();
+			//System.out.println
 			//sample.printElection();
 			sample.tests++;
 		}
@@ -49,7 +55,7 @@ public class ResultsRange {
 		vaverage   = new double[parties];
 		vlow       = new double[parties];
 		vmin       = new double[parties];
-		vresults = new int[maxTests][parties];
+		vresults = new long[maxTests][parties];
 		tests = 0;
 	}
 	
