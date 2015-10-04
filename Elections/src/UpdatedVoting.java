@@ -224,6 +224,8 @@ public class UpdatedVoting extends JPanel{
 			}
 			//give any leftover votes to the independents
 			votes[r][numParties-1] = count;
+			provincialVotes[provinces[r]][numParties-1] += votes[r][numParties-1];
+			nationalVotes[numParties-1] += votes[r][numParties-1];
 		}
 		//calculate results
 		results();
@@ -293,6 +295,13 @@ public class UpdatedVoting extends JPanel{
 	
 	public int getPartyNum(){
 		return numParties;
+	}
+	
+	public Color getPartyColor(int party){
+		return partyColors[party];
+	}
+	public String getPartyName(int party){
+		return partyNames[party];
 	}
 	
 	@Override

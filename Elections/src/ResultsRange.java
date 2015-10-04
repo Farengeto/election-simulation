@@ -1,9 +1,14 @@
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
+
+import javax.swing.JFrame;
 
 //Runs the election simulator repeatedly and outputs the estimated election results to 2 standard deviations
 public class ResultsRange {
 	public int tests = 0;
-	public int maxTests = 10000;
+	public int maxTests = 50;
 	public int parties = 9;
 	public double[] max       = new double[parties];
 	public double[] high      = new double[parties];
@@ -19,6 +24,9 @@ public class ResultsRange {
 	public double[] vmin       = new double[parties];
 	public long[][] vresults = new long[maxTests][parties];
 	public UpdatedVoting polls;
+	//election results output
+	public static String pollsOutName = "pollsOut.txt";
+	public static File pollsOut = new File(pollsOutName);
 	
 	public ResultsRange(){
 		polls = new UpdatedVoting();
@@ -26,21 +34,48 @@ public class ResultsRange {
 		reset();
 	}
 	
-	public static void main(String [] args){
+	public static void main(String [] args) throws InterruptedException{
 		ResultsRange sample = new ResultsRange();
 		while(sample.tests < sample.maxTests){
-			sample.polls = new UpdatedVoting();
-			sample.polls.update(0.10);
+			//sample.polls = new UpdatedVoting();
+			sample.polls.update(0.02);
 			sample.polls.voting();
 			sample.results[sample.tests] = sample.polls.getSeats();
 			sample.vresults[sample.tests] = sample.polls.getVotes();
-			//System.out.println
 			//sample.printElection();
 			sample.tests++;
 		}
-		sample.ranges();
-		sample.printResults();
-		sample.reset();
+		//sample.ranges();
+		//System.out.println();
+		//sample.printResults();
+		sample.resultsOut();
+		JFrame frame = new JFrame("Elections");
+		frame.add(sample.polls);
+		frame.setSize(1500, 900);
+		frame.setVisible(true);
+		sample.polls.update(0.05);
+		sample.polls.voting();
+		sample.polls.repaint();
+		//sample.reset();
+	}
+	
+	public void calcRanges(){
+		
+	}
+	
+	public void calcCampaign(){
+		polls.voting();
+		results[0] = polls.getSeats();
+		vresults[0] = polls.getVotes();
+		printElection();
+		for(tests = 1; tests < maxTests; tests++){
+			polls.update(0.02);
+			polls.voting();
+			results[tests] = polls.getSeats();
+			vresults[tests] = polls.getVotes();
+			printElection();
+		}
+		resultsOut();
 	}
 	
 	public void reset(){
@@ -102,10 +137,38 @@ public class ResultsRange {
 	}
 	
 	public void printElection(){
-		System.out.print("Election #" + tests);
+		System.out.print("Election #" + (tests+1));
 		for(int i = 0; i < 9; i++){
-			System.out.print(" - " + results[tests][i]);
+			//System.out.print(" - " + results[tests][i]);
+			System.out.print(" - " + vresults[tests][i]);
 		}
 		System.out.println();
+	}
+	
+	public void resultsOut(){
+		try{
+			String s1 = "Polls Output.txt";
+			String s2 = "Votes Output.txt";
+		    PrintWriter writer = new PrintWriter(s1, "UTF-8");
+		    PrintWriter writer2 = new PrintWriter(s2, "UTF-8");
+		    for(int p = 0; p < polls.getPartyNum(); p++){
+		    	writer.print('\t' + polls.getPartyName(p).substring(0,3).toUpperCase());
+		    	writer2.print('\t' + polls.getPartyName(p).substring(0,3).toUpperCase());
+		    }
+		    writer.println();
+		    writer2.println();
+		    for(int t = 0; t < maxTests; t++){
+		    	writer.print("E" + String.format("%05d",(t+1)));
+		    	writer2.print("E" + String.format("%05d",(t+1)));
+		    	for(int p = 0; p < polls.getPartyNum(); p++){
+			    	writer.print('\t' + Integer.toString(results[t][p]));
+			    	writer2.print('\t' + Long.toString(vresults[t][p]));
+			    }
+		    	writer.println();
+		    	writer2.println();
+		    }
+		    writer.close();
+		    writer2.close();
+		} catch (IOException e) {};
 	}
 }
