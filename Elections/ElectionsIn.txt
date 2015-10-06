@@ -5,7 +5,7 @@ Modia:		Arebel		Lussais		Gritlis		Pedes
 Kylon:		Caphias		Kylon		Leuhan		Raphion
 Ferran:		Rivel		Gereon		Matoni		Stinoes		Mialos
 Vulcer:		Heiank		Vulcer
-R/Cephio:	Aeghadurni	Aspey		Gorokra		Jacium		Laucon
+Cephio:	Aeghadurni	Aspey		Gorokra		Jacium		Laucon
 
 Voter Populations:
    735158   970875  4272298   470307   712233
@@ -46,43 +46,10 @@ Communist Party of Farengeto - Approval: 37%
 Libertarian Party - Approval: 28%
 230 190 0
 9	9	9	10	11	12	13	17	28	5	9	6	13	3	5	8	2	5	10	13	24	41	19	22	12
-R/Cephio Bloc - Approval: 63%
+Cephio Bloc - Approval: 63%
 255 127 0
 0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	461	281	347	409	217
 Independent/Other - Approval: N/A
 128 128 128
 3	2	3	5	3	3	4	3	5	2	5	5	3	1	1	6	5	3	3	4	7	4	6	6	8
 
-
-83	123	147	84	65	79	95	268	94	36	124	87	78	63	15	94	166	47	100	202	5	7	4	2	8
-45	74	548	13	59	35	34	87	16	142	209	74	16	12	46	27	114	16	115	248	4	18	5	3	8
-12	15	147	12	35	7	5	23	6	32	44	8	5	39	75	22	134	57	15	23	7	3	5	6	20
-7	3	4	8	3	5	5	4	6	5	21	14	8	7	4	7	3	7	4	3	4	2	6	1	4
-7	3	4	5	6	9	6	2	6	7	6	4	8	9	7	5	7	4	7	3	7	4	2	3	6
-1	1	2	1	1	1	1	1	1	1	2	1	1	1	1	1	2	1	1	1	1	1	1	1	1
-1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	28	13	26	29	5
-2	1	3	1	1	1	3	1	1	2	3	1	1	1	1	2	1	3	1	2	1	2	1	2	2
-
-721000	956000	4202000	462000	691000	473000	682000	1813000	452000	982000	2042000	829000	422000	471000	598000	723000	2043000	582000	1058000	2253000	13000	77000	21000	38000	15000
----
-
-Parties: 6
-Conservative - Approval: 46%
-0 0 255
-8 12 14 8 6 7 9 26 9 3 12 8 7 6 1 9 16 4 10 20 0 0 0 0 0
-Liberal - Approval: 62%
-255 0 0
-4 7 54 1 5 3 3 8 1 14 20 7 1 1 4 2 11 1 11 24 0 1 0 0 0 
-Democratic Party - Approval: 57%
-255 255 0
-1 1 14 1 3 0 0 2 0 3 4 0 0 3 7 2 13 5 1 2 0 0 0 0 2
-Green Party - Approval: 71%
-0 255 0
-0 0 0 0 0 0 0 0 0 0 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0
-Cephio Bloc - Approval: 63%
-255 127 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 2 2 0
-Independent/Other - Approval: N/A
-128 128 128
-1 0 2 0 0 0 2 0 0 0 2 0 0 0 0 1 0 2 0 0 0 0 0 0 0

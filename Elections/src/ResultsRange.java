@@ -36,46 +36,46 @@ public class ResultsRange {
 	
 	public static void main(String [] args) throws InterruptedException{
 		ResultsRange sample = new ResultsRange();
-		while(sample.tests < sample.maxTests){
-			//sample.polls = new UpdatedVoting();
-			sample.polls.update(0.02);
-			sample.polls.voting();
-			sample.results[sample.tests] = sample.polls.getSeats();
-			sample.vresults[sample.tests] = sample.polls.getVotes();
-			//sample.printElection();
-			sample.tests++;
-		}
-		//sample.ranges();
-		//System.out.println();
-		//sample.printResults();
-		sample.resultsOut();
-		JFrame frame = new JFrame("Elections");
-		frame.add(sample.polls);
-		frame.setSize(1500, 900);
-		frame.setVisible(true);
-		sample.polls.update(0.05);
-		sample.polls.voting();
-		sample.polls.repaint();
-		//sample.reset();
+		sample.calcCampaign();
+		sample.singleElection();
+		sample.reset();
 	}
 	
 	public void calcRanges(){
-		
+		for(tests = 0; tests < maxTests; tests++){
+			polls = new UpdatedVoting();
+			polls.update(0.02);
+			polls.voting();
+			results[tests] = polls.getSeats();
+			vresults[tests] = polls.getVotes();
+			//printElection();
+		}
+		resultsOut();
 	}
 	
 	public void calcCampaign(){
 		polls.voting();
 		results[0] = polls.getSeats();
 		vresults[0] = polls.getVotes();
-		printElection();
+		//printElection();
 		for(tests = 1; tests < maxTests; tests++){
 			polls.update(0.02);
 			polls.voting();
 			results[tests] = polls.getSeats();
 			vresults[tests] = polls.getVotes();
-			printElection();
+			//printElection();
 		}
 		resultsOut();
+	}
+	
+	public void singleElection(){
+		JFrame frame = new JFrame("Elections");
+		frame.add(polls);
+		frame.setSize(1500, 900);
+		frame.setVisible(true);
+		polls.update(0.02);
+		polls.voting();
+		polls.repaint();
 	}
 	
 	public void reset(){
@@ -139,8 +139,8 @@ public class ResultsRange {
 	public void printElection(){
 		System.out.print("Election #" + (tests+1));
 		for(int i = 0; i < 9; i++){
-			//System.out.print(" - " + results[tests][i]);
-			System.out.print(" - " + vresults[tests][i]);
+			System.out.print(" - " + results[tests][i]);
+			//System.out.print(" - " + vresults[tests][i]);
 		}
 		System.out.println();
 	}
