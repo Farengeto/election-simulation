@@ -47,6 +47,10 @@ public class Region extends Division{
 		province.addRegion(this);
 	}
 	
+	public Province getProvince(){
+		return province;
+	}
+	
 	//updated the support values into corrected decimal percentages
 	public void rebalance(){
 		double count = 0;

@@ -50,6 +50,10 @@ public class Province extends Division{
 		seats -= r.getSeats();
 	}
 	
+	public List<Region> getRegions(){
+		return regions;
+	}
+	
 	public void results(){
 		for(Party p : votes.keySet()){
 			votes.put(p, 0L);
