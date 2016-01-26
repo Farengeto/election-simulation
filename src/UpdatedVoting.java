@@ -130,10 +130,10 @@ public class UpdatedVoting extends JFrame{
 		add(rPane);
 		pack();
 		//Minimum size is set on national and provincial panels to prevent their width from change
-		Dimension min = new Dimension((int)nPane.getSize().getWidth(),1);
+		Dimension min = new Dimension((int)nResults.getSize().getWidth(),1);
 		nPane.setMinimumSize(min);
 		nPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		min = new Dimension((int)pPane.getSize().getWidth(),1);
+		min = new Dimension((int)pResults.getSize().getWidth(),1);
 		pPane.setMinimumSize(min);
 		pPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		//Prevent frame size from exceeding screen size
@@ -156,7 +156,6 @@ public class UpdatedVoting extends JFrame{
 		//show results
 		election.setVisible(true);
 		election.repaint();
-		
 	}
 	
 	//randomize party support levels by a randomized amount
