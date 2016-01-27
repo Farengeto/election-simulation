@@ -5,8 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 public class ProvincialResultsPanel extends ResultsPanel{
 	public static final Dimension DEFAULT_SIZE = new Dimension(400,900);
 	public static final int DEFAULT_WIDTH = 400;

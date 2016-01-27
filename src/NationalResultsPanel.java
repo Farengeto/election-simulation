@@ -5,8 +5,6 @@ import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 public class NationalResultsPanel extends ResultsPanel{
 	public static final Dimension DEFAULT_SIZE = new Dimension(300,900);
 	public static final int DEFAULT_WIDTH = 300;
@@ -34,13 +32,15 @@ public class NationalResultsPanel extends ResultsPanel{
 		parties.sort(new NationalComparator());
 		for(Party p : parties){
 			g.setColor(Color.BLACK);
-			g.drawString("" + p.getName(),25,25+count*35);
-			g.drawString("" + p.getSeats(),240*p.getSeats()/max+30,39+count*35);
+			g.drawString("" + p.getName(),10,25+count*35);
+			g.drawString("" + p.getSeats(),240*p.getSeats()/max+15,39+count*35);
 			g.setColor(p.getColor());
-			g.fillRect(25, 30+count*35, Math.max(240*p.getSeats()/max,1), 10);
+			g.fillRect(10, 30+count*35, Math.max(240*p.getSeats()/max,1), 10);
 			count++;
 		}
 		//draw pi chart for national seat counts
+		g.setColor(Color.BLACK);
+		g.drawString("Seat Distribution:",100,35+35*parties.size());
 		g.setColor(Color.GRAY);
 		g.fillOval(50,40+35*parties.size(),200,200);
 		int startAngle = 0;
@@ -52,6 +52,8 @@ public class NationalResultsPanel extends ResultsPanel{
 			startAngle += arcAngle;
 		}
 		//draw pi chart for national popular voting
+		g.setColor(Color.BLACK);
+		g.drawString("Vote Distribution:",100,285+35*parties.size());
 		g.setColor(Color.GRAY);
 		g.fillOval(50,290+35*parties.size(),200,200);
 		startAngle = 0;

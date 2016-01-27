@@ -1,21 +1,17 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.BoxLayout;
 
 //Simulation levels:
 //National level is the entirety of the country (i.e. Canada)
@@ -32,6 +28,9 @@ public class UpdatedVoting extends JFrame{
 	private List<Province> provinces;
 	private List<Region> regions;
 	private List<Party> parties;
+	private NationalResultsPanel nResults;
+	private ProvincialResultsPanel pResults;
+	private RegionalResultsPanel rResults;
 	
 	public UpdatedVoting(){
 		this("ElectionsIn.txt");
@@ -118,30 +117,43 @@ public class UpdatedVoting extends JFrame{
 		
 		//set-up JFrame
 		this.getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.LINE_AXIS));
-		NationalResultsPanel nResults = new NationalResultsPanel(this);
-		ProvincialResultsPanel pResults = new ProvincialResultsPanel(this);
-		RegionalResultsPanel rResults = new RegionalResultsPanel(this);
+		nResults = new NationalResultsPanel(this);
+		pResults = new ProvincialResultsPanel(this);
+		rResults = new RegionalResultsPanel(this);
+		/*createTable();
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+		table.setFillsViewportHeight(true);*/
 		//each panel is contained in a scroll pane
 		JScrollPane nPane = new JScrollPane(nResults);
 		JScrollPane pPane = new JScrollPane(pResults);
 		JScrollPane rPane = new JScrollPane(rResults);
+		//JScrollPane rPane = new JScrollPane(table);
 		add(nPane);
 		add(pPane);
 		add(rPane);
+		//add(rResults);
 		pack();
+		//table.setSize(table.getPreferredSize());
 		//Minimum size is set on national and provincial panels to prevent their width from change
 		Dimension min = new Dimension((int)nResults.getSize().getWidth(),1);
+		Dimension max = new Dimension((int)nResults.getSize().getWidth(),10000);
 		nPane.setMinimumSize(min);
+		nPane.setMaximumSize(max);
 		nPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		min = new Dimension((int)pResults.getSize().getWidth(),1);
+		max = new Dimension((int)pResults.getSize().getWidth(),10000);
 		pPane.setMinimumSize(min);
+		pPane.setMaximumSize(max);
 		pPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		//Prevent frame size from exceeding screen size
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		if(screenSize.getWidth() < getWidth() && screenSize.getHeight() < getHeight()){
-			int width = (int)Math.min(screenSize.getWidth(),getWidth());
-			int height = (int)Math.min(screenSize.getHeight(),getHeight());
-			setSize(width,height);
+		if(screenSize.getWidth() <= getWidth() || screenSize.getHeight() <= getHeight()){
+			//int width = (int)Math.min(screenSize.getWidth(),getWidth());
+			//int height = (int)Math.min(screenSize.getHeight(),getHeight());
+			//setSize(width,height);
+			setExtendedState(MAXIMIZED_BOTH);
 		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -155,6 +167,7 @@ public class UpdatedVoting extends JFrame{
 		//election.printResults();
 		//show results
 		election.setVisible(true);
+		//election.setExtendedState(MAXIMIZED_BOTH);
 		election.repaint();
 	}
 	
@@ -188,7 +201,8 @@ public class UpdatedVoting extends JFrame{
 				p.setResults(vote,seat);
 			}
 		}
-	}
+		rResults.updateTable();
+	}	
 	
 	//print results to the console
 	public void printResults(){
@@ -205,7 +219,8 @@ public class UpdatedVoting extends JFrame{
 			System.out.println();
 		}
 	}
-	
+		
+
 	public void reset(){
 		for(Party p : parties){
 			p.setResults(0,0);
@@ -216,18 +231,23 @@ public class UpdatedVoting extends JFrame{
 	public int getSeats(){
 		return seats;
 	}
+	
 	public long getPopulation(){
 		return population;
 	}
+	
 	public List<Province> getProvinces(){
 		return provinces;
 	}
+	
 	public List<Region> getRegions(){
 		return regions;
 	}
+	
 	public List<Party> getParties(){
 		return parties;
 	}
+	
 	public Map<Party,Long> getVotes(){
 		Map<Party,Long> v = new HashMap<>();
 		for(Party p : parties){
@@ -235,6 +255,7 @@ public class UpdatedVoting extends JFrame{
 		}
 		return v;
 	}
+	
 	public Map<Party,Integer> getResults(){
 		Map<Party,Integer> r = new HashMap<>();
 		for(Party p : parties){
@@ -242,7 +263,7 @@ public class UpdatedVoting extends JFrame{
 		}
 		return r;
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
