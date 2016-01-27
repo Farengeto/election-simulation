@@ -6,21 +6,17 @@ import javax.swing.JLabel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 
-//public class RegionalResultsPanel extends ResultsPanel{
+//Table class for the regional results of the election
 public class RegionalResultsPanel extends JTable{	
 	private UpdatedVoting results;
 	private boolean edit;
 	
+	//creates the class for an electoral data set 
 	public RegionalResultsPanel(UpdatedVoting voting){
 		this(voting,makeData(voting),makeColumns(voting));
-		edit = false;
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-		setFillsViewportHeight(true);
-		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	}
 	
+	//creates the class for an electoral data set and the table data
 	public RegionalResultsPanel(UpdatedVoting voting,Object[][] data,Object[] columns){
 		super(data,columns);
 		results = voting;
@@ -37,6 +33,7 @@ public class RegionalResultsPanel extends JTable{
 		return edit; 
 	}
 	
+	//generate the column headers from the data set
 	public static Object[] makeColumns(UpdatedVoting result){
 		List<Party> parties = result.getParties();
 		//resort parties 
@@ -53,12 +50,13 @@ public class RegionalResultsPanel extends JTable{
 		return columns;
 	}
 	
+	//generate the table data from the data set
 	public static Object[][] makeData(UpdatedVoting result){
 		//get current set of results
 		List<Party> parties = result.getParties();
 		List<Region> regions = result.getRegions();
 		//resort parties 
-		//parties.sort(new NationalComparator());
+		parties.sort(new NationalComparator());
 		//get each region's province, name, demographics and votes
 		Object[][] data = new Object[regions.size()][parties.size()+3];
 		int count = 0;
@@ -81,40 +79,41 @@ public class RegionalResultsPanel extends JTable{
 		return data;
 	}
 	
+	//update the results table with a new set of data
+	//resorts columns so top national parties are shown first
 	public void updateTable(){
 		//get current set of results
 		List<Party> parties = results.getParties();
 		List<Region> regions = results.getRegions();
-		edit = true; //enable editing
+		edit = true; //enable editing of table
 		//resort parties 
-		//parties.sort(new NationalComparator());
+		parties.sort(new NationalComparator());
 		int count = 0;
-		/*for(Party p : parties){
-			//System.out.println(p.getName() + " Test");
-			getColumnModel().getColumn(count+3).setHeaderValue(p.getName() + " Test");
+		//update column headers for sorting
+		for(Party p : parties){
+			getColumnModel().getColumn(count+3).setHeaderValue(p.getName());
 			count++;
 		}
 		//replace all data values with the newest set
-		count = 0;*/
+		count = 0;
 		for(Region r : regions){
 			int pCount = 0;
 			for(Party p : parties){
+				//check that data results are not null
 				if(r.getResults().get(p) != null && r.getVotes().get(p) != null){
 					setValueAt(r.getResults().get(p) + " - " + Math.round(1000.0 * (double)r.getVotes().get(p) / (double)r.getPopulation())/10.0 + "%", count, pCount+3);
 				}
 				else{
-					setValueAt("0 - N/A", count, pCount+3);
+					setValueAt("N/A", count, pCount+3);
 				}
 				pCount++;
 			}
 			count++;
 		}
-		edit = false; //disable editing
+		edit = false; //disable editing of table
 	}
 	
-	//refreshes the table whenever the panel is repainted
 	public void paint(Graphics g){
 		super.paint(g);
-		//updateTable();
 	}
 }

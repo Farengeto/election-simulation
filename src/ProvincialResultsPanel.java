@@ -10,7 +10,7 @@ public class ProvincialResultsPanel extends ResultsPanel{
 	public static final int DEFAULT_WIDTH = 400;
 	
 	public ProvincialResultsPanel(UpdatedVoting voting){
-		super(voting,new Dimension(DEFAULT_WIDTH,25+125*voting.getProvinces().size()));
+		super(voting,new Dimension(DEFAULT_WIDTH,125*voting.getProvinces().size()));
 	}
 
 	
@@ -27,20 +27,23 @@ public class ProvincialResultsPanel extends ResultsPanel{
 		int count = 0;
 		int startAngle = 0;
 		for(Province pr : provinces){
+			g.setColor(Color.BLACK);
+			//g.drawRect(0,125*count,DEFAULT_WIDTH-1,125);
+			g.drawLine(0,125+125*count,DEFAULT_WIDTH,125+125*count);
 			parties.sort(new DivisionalComparator((Division)pr));
 			//draw pi chart for regional popular voting
 			g.setColor(Color.GRAY);
-			g.fillOval(25,25+125*count,100,100);
+			g.fillOval(25,20+125*count,100,100);
 			startAngle = 0;
 			for (Party p : parties) {
 				int arcAngle = (int) Math.round((double)pr.getVotes().get(p)/pr.population * 360.0);
 				g.setColor(p.getColor());
-				g.fillArc(25,25+125*count, 100, 100, 
+				g.fillArc(25,20+125*count, 100, 100, 
 						startAngle, arcAngle);
 				startAngle += arcAngle;
 			}
 			g.setColor(Color. BLACK);
-			g.drawString(pr.getName(), 50, 20+125*count);
+			g.drawString(pr.getName(), 50, 15+125*count);
 			//draw bar charts for party seats in each province
 			int max = 1;
 			for(Party p : parties){
@@ -48,11 +51,13 @@ public class ProvincialResultsPanel extends ResultsPanel{
 			}
 			int pCount = 0;
 			for(Party p : parties){
-				if(count < 10 && pr.getResults().get(p) > 0){ //limit to the 10 parties with highest count, to preserve space
+				//limit to the 10 parties with the most seats and votes, for size purposes
+				//parties with no seats are not list
+				if(pCount < 10 && pr.getResults().get(p) > 0){
 					g.setColor(Color.BLACK);
-					g.drawString("" + pr.getResults().get(p),155+200*pr.getResults().get(p)/max,34+125*count+10*pCount);
+					g.drawString("" + pr.getResults().get(p),155+200*pr.getResults().get(p)/max,29+125*count+10*pCount);
 					g.setColor(p.getColor());
-					g.fillRect(150, 25+125*count+10*pCount, Math.max(200*pr.getResults().get(p)/max,1), 10);
+					g.fillRect(150, 20+125*count+10*pCount, Math.max(200*pr.getResults().get(p)/max,1), 10);
 				}
 				pCount++;
 			}

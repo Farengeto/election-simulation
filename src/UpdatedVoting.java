@@ -13,13 +13,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 
-//Simulation levels:
-//National level is the entirety of the country (i.e. Canada)
-//Provinces represent highest level divisions of country (i.e. the province of Ontario)
-//Regions represent sub-divisions of the provinces (i.e. the Greater Toronto Area)
-//
-//To simulate only one division level, set one region per province or place all regions in one province
-//To simulate single-seat first past the post voting, set seats in each region to one and define each seat as its own region
+/**
+ * @author Travis
+ * Simulates the election of a nation from a data set.
+ * Output can be displayed in a JFrame. The frame is notVisible by default for operations that do not require displaying
+ * National results for each party are restored in their respective Party object
+ * Divisional results for each party are stored in the "results" map for the respective division
+ * 
+ * Simulation levels:
+ * National level is the entirety of the country (i.e. Canada)
+ * Provinces represent highest level divisions of country (i.e. the province of Ontario)
+ * Regions represent sub-divisions of the provinces (i.e. the Greater Toronto Area)
+ * 
+ * To simulate only one division level, set one region per province or place all regions in one province
+ * To simulate single-seat first past the post voting, set seats in each region to one and define each seat as its own region
+ */
+
 
 public class UpdatedVoting extends JFrame{
 	private File fileIn;
@@ -120,22 +129,14 @@ public class UpdatedVoting extends JFrame{
 		nResults = new NationalResultsPanel(this);
 		pResults = new ProvincialResultsPanel(this);
 		rResults = new RegionalResultsPanel(this);
-		/*createTable();
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-		table.setFillsViewportHeight(true);*/
 		//each panel is contained in a scroll pane
 		JScrollPane nPane = new JScrollPane(nResults);
 		JScrollPane pPane = new JScrollPane(pResults);
 		JScrollPane rPane = new JScrollPane(rResults);
-		//JScrollPane rPane = new JScrollPane(table);
 		add(nPane);
 		add(pPane);
 		add(rPane);
-		//add(rResults);
 		pack();
-		//table.setSize(table.getPreferredSize());
 		//Minimum size is set on national and provincial panels to prevent their width from change
 		Dimension min = new Dimension((int)nResults.getSize().getWidth(),1);
 		Dimension max = new Dimension((int)nResults.getSize().getWidth(),10000);
@@ -167,7 +168,6 @@ public class UpdatedVoting extends JFrame{
 		//election.printResults();
 		//show results
 		election.setVisible(true);
-		//election.setExtendedState(MAXIMIZED_BOTH);
 		election.repaint();
 	}
 	
