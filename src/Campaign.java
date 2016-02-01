@@ -19,18 +19,11 @@ public class Campaign extends Results{
 	}
 	
 	public static void main(String [] args) throws InterruptedException{
-		Results sample = new Campaign(50);
+		Campaign sample = new Campaign(50);
 		sample.calculate();
-		JFrame frame = new JFrame("Elections");
-		frame.add(sample.polls);
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int num = sample.polls.getParties().size();
-		int width = Math.min((int)screenSize.getWidth(),980+60*num);
-		int height = Math.min((int)screenSize.getHeight(),540+35*num);
-		frame.setSize(width,height);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		sample.printResults();
+		sample.polls.setVisible(true);
+		//sample.printResults();
+		sample.resultsOut();
 	}
 	
 	public void calculate(){
@@ -44,8 +37,6 @@ public class Campaign extends Results{
 		}
 		//run a final election
 		polls.results();
-		//System.out.println(votes);
-		//System.out.println(seats);
 	}
 	
 	public void printResults(){

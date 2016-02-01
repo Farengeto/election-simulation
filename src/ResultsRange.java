@@ -37,9 +37,10 @@ public class ResultsRange extends Results{
 	}
 	
 	public static void main(String [] args) throws InterruptedException{
-		Results sample = new ResultsRange(10000);
+		ResultsRange sample = new ResultsRange(1000);
 		sample.calculate();
-		sample.printResults();
+		//sample.printResults();
+		sample.resultsOut();
 	}
 	
 	public void calculate(){
