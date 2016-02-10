@@ -51,6 +51,13 @@ public class Region extends Division{
 		return province;
 	}
 	
+	public double getSupport(Party p){
+		if(support.get(p) == null){
+			return 0;
+		}
+		return support.get(p);
+	}
+	
 	//updated the support values into corrected decimal percentages
 	public void rebalance(){
 		double count = 0;

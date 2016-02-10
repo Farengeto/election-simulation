@@ -56,6 +56,10 @@ public class Party {
 		return seats;
 	}
 	
+	public double getApproval(){
+		return approval;
+	}
+	
 	public String getResults(){
 		return (name + " " + color.getRed() + "," + color.getBlue() + "," + color.getGreen() + " " + approval*100 + "% - " + seats + " seats, " + votes + " votes");
 	}
