@@ -94,13 +94,16 @@ public class UpdatedVoting extends JFrame{
 				
 				//read all regions in province
 				//scan all lines until next province 
-				line = sc.nextLine();
-				while((line.length() == 0 || line.charAt(line.length()-1) != ':') && sc.hasNextLine() && !line.contains("---#")){
-					
+				do{	
+					line = sc.nextLine();
 					//read line if not blank
-					if(!line.equals("") && !line.contains("---#")){
+					if(!line.equals("") && !line.contains("---#") && line.charAt(line.length()-1) != ':'){
 						Scanner reg = new Scanner(line);
 						String rName = reg.next();
+						//check for additional words in name
+						while(!reg.hasNextLong()){
+							rName += (" " + reg.next());
+						}
 						long rPop = reg.nextLong();
 						population += rPop;
 						int rSeat = reg.nextInt();
@@ -117,8 +120,7 @@ public class UpdatedVoting extends JFrame{
 						regions.add(r);
 						reg.close();
 					}
-					line = sc.nextLine();
-				}
+				}while((line.length() == 0 || line.charAt(line.length()-1) != ':') && sc.hasNextLine() && !line.contains("---#"));
 				provinces.add(p);
 			}
 			sc.close();
