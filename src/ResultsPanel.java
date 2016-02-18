@@ -1,5 +1,4 @@
 import java.awt.Dimension;
-
 import javax.swing.JPanel;
 
 //superclass for result panels

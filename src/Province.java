@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
+/*
+ * Second level subdivision of UpdatedVoting simulation
+ * Defines the Region's Province and is Party support levels for each Party
+ */
 public class Province extends Division{
 	private List<Region> regions;
 	
@@ -77,6 +80,7 @@ public class Province extends Division{
 		}
 	}
 	
+	//updates support with new levels, based on shift margin and shifts of higher level divisions
 	public void update(double shiftMargin,Map<Party,Double> natShift){
 		Random random = new Random();
 		Map<Party,Double> proShift = new HashMap<>();

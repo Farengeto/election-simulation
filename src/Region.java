@@ -2,7 +2,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
-
+/*
+ * Second level subdivision of UpdatedVoting simulation
+ * Defines the Region's Province and is Party support levels for each Party
+ */
 public class Region extends Division{
 	private Province province;
 	private Map<Party,Double> support;
@@ -41,6 +44,7 @@ public class Region extends Division{
 		province.changePopulation(popChange);
 	}
 	
+	//swap Province to new one
 	public void changeProvince(Province newProvince){
 		province.removeRegion(this);
 		province = newProvince;
@@ -95,7 +99,7 @@ public class Region extends Division{
 		}
 		
 		//Define quote for the largest remainder method
-		//hare quota, biased towards smaller parties
+		//Uses Hare quota, biased towards smaller parties
 		long quota = population/seats;
 		//Allocate seats according to the quota
 		int remainingSeats = seats;
@@ -131,6 +135,7 @@ public class Region extends Division{
 		}
 	}
 	
+	//updates support with new levels, based on shift margin and shifts of higher level divisions
 	public void update(double shiftMargin,Map<Party,Double> natShift,Map<Party,Double> proShift){
 		Random random = new Random();
 		Map<Party,Double> regShift = new HashMap<>();

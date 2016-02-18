@@ -3,13 +3,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-//abstract class to 
+/*
+ * Abstract class for calculating a set of election results
+ */
 public abstract class Results {
 	protected Map<Party,Integer> lastSeats;
 	protected Map<Party,Long> lastVotes;
 	protected UpdatedVoting polls;
-	//protected Map<Party,List<Integer>> seats;
-	//protected Map<Party,List<Long>> votes; 
 	protected Map<String,List<Integer>> seats;
 	protected Map<String,List<Long>> votes; 
 	protected String file;

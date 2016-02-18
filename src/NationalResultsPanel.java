@@ -5,6 +5,7 @@ import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.util.List;
 
+//panel containing the national election results
 public class NationalResultsPanel extends ResultsPanel{
 	public static final Dimension DEFAULT_SIZE = new Dimension(300,900);
 	public static final int DEFAULT_WIDTH = 300;
@@ -18,10 +19,8 @@ public class NationalResultsPanel extends ResultsPanel{
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		
 		//get current set of results
 		List<Party> parties = results.getParties();
-		
 		//find the party with the most national seats for scaling
 		int max = 1;
 		for(Party p : parties){

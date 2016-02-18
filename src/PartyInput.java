@@ -1,8 +1,9 @@
 import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -11,10 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.table.*;
 import javax.swing.JLabel;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 
 public class PartyInput implements ActionListener{
 	private JFrame frame;
@@ -28,12 +25,15 @@ public class PartyInput implements ActionListener{
 	public PartyInput(InputForm input){
 		this(input,3);
 	}
+	//default from blank data set, party count defined in size
 	public PartyInput(InputForm input, int size){
 		this(input,new Object[size][5]);
 	}
+	//default from blank data set, parties defined by given party list
 	public PartyInput(InputForm input, List<Party> parties){
 		this(input,makeData(parties));
 	}
+	//generate from given data set, party count defined in size
 	public PartyInput(InputForm input, Object[][] data){
 		this.input = input;
 		Object[] columns = {"Party name","Approval (%)","Colour, Red (0-255)","Colour, Green (0-255)","Colour, Blue (0-255)"};
@@ -52,7 +52,9 @@ public class PartyInput implements ActionListener{
 				data[i][4] = 128;
 			}
 		}
+		//create the table
 		dtm = new DefaultTableModel(data,columns){
+			//lock column data types
 			@Override
 			public Class getColumnClass(int column) {
 				switch (column) {
@@ -71,7 +73,6 @@ public class PartyInput implements ActionListener{
             }
         };
 		table = new JTable(dtm);
-		//table = new JTable(data,columns);
 		JScrollPane pane = new JScrollPane(table);
 		JPanel partySelect = new JPanel();
 		partySelect.setLayout(new GridLayout(1,3));
@@ -84,6 +85,7 @@ public class PartyInput implements ActionListener{
 		partySelect.add(countButton);
 		JButton nextButton = new JButton("Next");
 		nextButton.addActionListener(new PartyListener(input));
+		//create the JFrame
 		frame = new JFrame("Party Input Menu");
 		frame.setLayout(new BorderLayout());
 		frame.add(pane,BorderLayout.CENTER);
@@ -94,6 +96,7 @@ public class PartyInput implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	//create the table data set from party data
 	private static Object[][] makeData(List<Party> parties){
 		Object[][] data = new Object[parties.size()][5];
 		int count = 0;
@@ -109,24 +112,9 @@ public class PartyInput implements ActionListener{
 		return data;
 	}
 	
-	/*public void updateTable(){
-		//TableModel dtm = table.getModel();
-		int size = Integer.parseInt(sizeCounter.getText());
-		System.out.println(size);
-		while(size < dtm.getRowCount()){
-			dtm.removeRow(dtm.getRowCount()-1);
-		}
-		while(size > dtm.getRowCount()){
-			Object[] newRow = {"",0,128,128,128};
-			dtm.addRow(newRow);
-		}
-		dtm.fireTableDataChanged();
-		//table.setModel(dtm);
-	}*/
-	
+	//update table to new party count on button press
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(sizeCounter.getText());
-		//updateTable();
 		int size = Integer.parseInt(sizeCounter.getText());
 		while(size < dtm.getRowCount()){
 			dtm.removeRow(dtm.getRowCount()-1);
@@ -138,6 +126,7 @@ public class PartyInput implements ActionListener{
 		dtm.fireTableDataChanged();
 	}
 	
+	//"Next" button for window
 	public class PartyListener implements ActionListener{
 		InputForm input;
 		
@@ -145,6 +134,7 @@ public class PartyInput implements ActionListener{
 			this.input = input;
 		}
 		
+		//Save table data to inputForm, when button pressed
 		public void actionPerformed(ActionEvent e) {
 			List<Party> newParties = new ArrayList<>();
 			for(int i = 0; i < dtm.getRowCount(); i++){
@@ -160,17 +150,4 @@ public class PartyInput implements ActionListener{
 			new RegionInput(input,input.getRegions());
 		}
 	}
-	
-	/*public List<Party> updatedParties(){
-		List<Party> newParties = new ArrayList<>();
-		for(int i = 0; i < dtm.getRowCount(); i++){
-			Color c = new Color((Integer)table.getValueAt(i,2),(Integer)table.getValueAt(i,3),(Integer)table.getValueAt(i,4));
-			double a = ((Double)table.getValueAt(i,2))/100.0;
-			newParties.add(new Party((String)table.getValueAt(i,2),c,a));
-		}
-		for(Party p : newParties){
-			System.out.println(p.getResults());
-		}
-		return newParties;
-	}*/
 }

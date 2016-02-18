@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
+//panel containing the national election results
 public class ProvincialResultsPanel extends ResultsPanel{
 	public static final Dimension DEFAULT_SIZE = new Dimension(400,900);
 	public static final int DEFAULT_WIDTH = 400;
@@ -12,14 +13,12 @@ public class ProvincialResultsPanel extends ResultsPanel{
 	public ProvincialResultsPanel(UpdatedVoting voting){
 		super(voting,new Dimension(DEFAULT_WIDTH,125*voting.getProvinces().size()));
 	}
-
 	
 	public void paint(Graphics g){
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		
 		//get current set of results
 		List<Province> provinces = results.getProvinces();
 		List<Party> parties = results.getParties();

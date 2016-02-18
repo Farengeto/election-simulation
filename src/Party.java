@@ -1,5 +1,9 @@
 import java.awt.Color;
-
+/*
+ * Class containing the data for a political party
+ * Defines a party name, colour and approval rating
+ * Also stores the party's electoral results using national vote and seat counts
+ */
 public class Party {
 	private String name;
 	private Color color;

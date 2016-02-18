@@ -1,7 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.*;
-
 import javax.swing.JFrame;
 
 
@@ -9,6 +8,7 @@ import javax.swing.JFrame;
 public class Campaign extends Results{
 	public int length;
 	
+	//run campaign using a certain number of iterations and the input filename
 	public Campaign(int length){
 		this(length,"ElectionsIn.txt");
 	}
@@ -39,6 +39,7 @@ public class Campaign extends Results{
 		polls.results();
 	}
 	
+	//print election results to console
 	public void printResults(){
 	    for(String party : seats.keySet()){
 	    	System.out.print('\t' + party.substring(0,3).toUpperCase());

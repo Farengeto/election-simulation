@@ -54,7 +54,7 @@ public class ResultsRange extends Results{
 			addElection(pResult);
 		}
 		//calculate intervals
-		//hard-coded for median, 50% and 95% intervals for now
+		//uses median, 50% and 95% confidence intervals
 		for(String p : votes.keySet()){
 			List<Integer> s = seats.get(p);
 			Collections.sort(s);

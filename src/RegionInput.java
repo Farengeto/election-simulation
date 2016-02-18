@@ -27,18 +27,22 @@ public class RegionInput implements ActionListener{
 	private JButton countButton;
 	private InputForm input;
 	
-	//default from blank data set, default 3 parties
+	//generate from party list and default 5 regions
 	public RegionInput(InputForm input){
 		this(input,5);
 	}
+	//generate from party list and given number of regions
 	public RegionInput(InputForm input, int size){
 		this(input,new Object[size][input.getParties().size()+4]);
 	}
+	//generate from party list and region list
 	public RegionInput(InputForm input, List<Region> regions){
 		this(input,makeData(input,regions));
 	}
+	//generate from party list and regional data set
 	public RegionInput(InputForm input, Object[][] data){
 		this.input = input;
+		//create columns
 		Object[] columns = new String[input.getParties().size()+4];
 		columns[0] = "Province";
 		columns[1] = "Region";
@@ -64,7 +68,7 @@ public class RegionInput implements ActionListener{
 				data[r][3] = 0;
 			}
 		}
-		
+		//generate table
 		dtm = new DefaultTableModel(data,columns){
 			@Override
 			public Class getColumnClass(int column) {
@@ -93,9 +97,7 @@ public class RegionInput implements ActionListener{
 		countButton = new JButton("Update");
 		countButton.addActionListener(this);
 		partySelect.add(countButton);
-		//JButton nextButton = new JButton("Next");
-		//nextButton.addActionListener(new RegionListener(input));
-		
+		//create JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(4,1));
 		JButton nextButton = new JButton("Save");
@@ -110,8 +112,7 @@ public class RegionInput implements ActionListener{
 		JButton rangeButton = new JButton("Save and run Range");
 		rangeButton.addActionListener(new RegionListener(input));
 		buttonPanel.add(rangeButton);
-		
-		
+		//create JFrame
 		frame = new JFrame("Region Input Menu");
 		frame.setLayout(new BorderLayout());
 		frame.add(pane,BorderLayout.CENTER);
@@ -122,6 +123,7 @@ public class RegionInput implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	//create the table data set from party and region data
 	private static Object[][] makeData(InputForm input, List<Region> regions){
 		Object[][] data = new Object[regions.size()][input.getParties().size()+4];
 		int count = 0;
@@ -146,9 +148,9 @@ public class RegionInput implements ActionListener{
 		return data;
 	}
 	
+	//update table to new region count on button press
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(sizeCounter.getText());
-		//updateTable();
 		int size = Integer.parseInt(sizeCounter.getText());
 		while(size < dtm.getRowCount()){
 			dtm.removeRow(dtm.getRowCount()-1);
@@ -167,7 +169,6 @@ public class RegionInput implements ActionListener{
 	
 	//initialize list of Provinces
 	public List<Province> createProvinces(){
-		//initialize list of Provinces
 		Set<String> provSet = new HashSet<>();
 		for(int i = 0; i < dtm.getRowCount(); i++){
 			provSet.add((String)table.getValueAt(i,0));
@@ -203,6 +204,7 @@ public class RegionInput implements ActionListener{
 		return newRegions;
 	}
 	
+	//save data to input and write completed data set to file
 	public void saveData(){
 		List<Province> newProvinces = createProvinces();
 		List<Region> newRegions = createRegions(newProvinces);
@@ -211,6 +213,8 @@ public class RegionInput implements ActionListener{
 		input.writeToFile();
 	}
 	
+	//"Save" button
+	//saves data to file
 	public class RegionListener implements ActionListener{
 		InputForm input;
 		
@@ -223,6 +227,8 @@ public class RegionInput implements ActionListener{
 		}
 	}
 	
+	//"Save and run Election" button
+	//saves data to file and runs UpdatedVoting
 	public class ElectionListener implements ActionListener{
 		InputForm input;
 		
@@ -240,6 +246,9 @@ public class RegionInput implements ActionListener{
 			election.repaint();
 		}
 	}
+	
+	//"Save and run Campaign" button
+	//saves data to file and runs Campaign
 	public class CampaignListener implements ActionListener{
 		InputForm input;
 		
@@ -255,6 +264,9 @@ public class RegionInput implements ActionListener{
 			sample.resultsOut();
 		}
 	}
+	
+	//"Save and run Range" button
+	//saves data to file and runs ResultsRange
 	public class RangeListener implements ActionListener{
 		InputForm input;
 		

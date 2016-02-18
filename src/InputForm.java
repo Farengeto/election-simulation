@@ -22,6 +22,7 @@ public class InputForm{
 	private String outFile = "ElectionsIn.txt";
 	public boolean done = false;
 	
+	//create the input form using either the default or a given file
 	public InputForm(){
 		this("ElectionsIn.txt");
 	}
@@ -108,6 +109,7 @@ public class InputForm{
 		}catch(IOException ex){}
 	}
 	
+	//runs the input form with default file settings
 	public static void main(String[] args){
 		InputForm input = new InputForm();
 		PartyInput partyIn = new PartyInput(input,input.getParties());
@@ -125,8 +127,9 @@ public class InputForm{
 		return regions;
 	}
 	
+	//maps conversion for old parties to new parties, if applicable
+	//used to maintain region data for parties with same names
 	public void setParties(List<Party> newParties){
-		//map conversion for old parties to new parties, if applicable
 		for(Party np : newParties){
 			for(Party p : parties){
 				if(p.getName().equals(np.getName())){
@@ -154,6 +157,8 @@ public class InputForm{
 		return outFile;
 	}
 	
+	//writes the updated data to the given output file
+	//uses same format as input so data can be reused as input
 	public void writeToFile(){
 		try{
 			PrintWriter writer = new PrintWriter(outFile, "UTF-8");
