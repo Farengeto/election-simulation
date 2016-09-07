@@ -65,7 +65,7 @@ public class Party {
 	}
 	
 	public String getResults(){
-		return (name + " " + color.getRed() + "," + color.getBlue() + "," + color.getGreen() + " " + approval*100 + "% - " + seats + " seats, " + votes + " votes");
+		return (name + " " + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + " " + approval*100 + "% - " + seats + " seats, " + votes + " votes");
 	}
 	
 	public String toString(){

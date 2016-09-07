@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -18,6 +17,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 
 public class RegionInput implements ActionListener{
 	private JFrame frame;
@@ -26,6 +27,13 @@ public class RegionInput implements ActionListener{
 	private JTextField sizeCounter;
 	private JButton countButton;
 	private InputForm input;
+	private JButton nextButton;
+	private JButton electionButton;
+	private JButton campaignButton;
+	private JButton rangeButton;
+	private boolean elecRunning;
+	private boolean campRunning;
+	private boolean rangRunning;
 	
 	//generate from party list and default 5 regions
 	public RegionInput(InputForm input){
@@ -100,18 +108,25 @@ public class RegionInput implements ActionListener{
 		//create JPanel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(4,1));
-		JButton nextButton = new JButton("Save");
+		nextButton = new JButton("Save");
 		nextButton.addActionListener(new RegionListener(input));
 		buttonPanel.add(nextButton);
-		JButton electionButton = new JButton("Save and run Election");
+		electionButton = new JButton("Run Election");
 		electionButton.addActionListener(new ElectionListener(input));
 		buttonPanel.add(electionButton);
-		JButton campaignButton = new JButton("Save and run Campaign");
+		campaignButton = new JButton("Run Campaign");
 		campaignButton.addActionListener(new CampaignListener(input));
 		buttonPanel.add(campaignButton);
-		JButton rangeButton = new JButton("Save and run Range");
-		rangeButton.addActionListener(new RegionListener(input));
+		rangeButton = new JButton("Run Range Calculator");
+		rangeButton.addActionListener(new RangeListener(input));
 		buttonPanel.add(rangeButton);
+		dtm.addTableModelListener(new TableListener(input));
+		elecRunning = false;
+		campRunning = false;
+		rangRunning = false;
+		electionButton.setEnabled(false);
+		campaignButton.setEnabled(false);
+		rangeButton.setEnabled(false);
 		//create JFrame
 		frame = new JFrame("Region Input Menu");
 		frame.setLayout(new BorderLayout());
@@ -223,12 +238,27 @@ public class RegionInput implements ActionListener{
 		}
 		
 		public void actionPerformed(ActionEvent e) {
+			nextButton.setEnabled(false);
+			electionButton.setEnabled(false);
+			campaignButton.setEnabled(false);
+			rangeButton.setEnabled(false);
+			nextButton.setText("Saving...");
 			saveData();
+			nextButton.setText("Saved");
+			if(!elecRunning){
+				electionButton.setEnabled(true);
+			}
+			if(!campRunning){
+				campaignButton.setEnabled(true);
+			}
+			if(!rangRunning){
+				rangeButton.setEnabled(true);
+			}
 		}
 	}
 	
-	//"Save and run Election" button
-	//saves data to file and runs UpdatedVoting
+	//"Run Election" button
+	//runs UpdatedVoting
 	public class ElectionListener implements ActionListener{
 		InputForm input;
 		
@@ -237,13 +267,19 @@ public class RegionInput implements ActionListener{
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			saveData();
+			elecRunning = true;
+			electionButton.setEnabled(false);
 			//perform election
-			UpdatedVoting election = new UpdatedVoting(input.getOutFile());
+			electionButton.setText("Running...");
+			UpdatedVoting election = new UpdatedVoting(input.getOutFile());		
 			election.update(0.10);
 			election.results();
 			election.setVisible(true);
 			election.repaint();
+			elecRunning = false;
+			electionButton.setEnabled(true);
+			electionButton.setText("Run Election");
+			
 		}
 	}
 	
@@ -257,11 +293,16 @@ public class RegionInput implements ActionListener{
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			saveData();
+			campRunning = true;
+			campaignButton.setEnabled(false);
+			campaignButton.setText("Running...");
 			Campaign sample = new Campaign(50,input.getOutFile());
 			sample.calculate();
 			sample.polls.setVisible(true);
 			sample.resultsOut();
+			campRunning = false;
+			campaignButton.setEnabled(true);
+			campaignButton.setText("Run Campaign");
 		}
 	}
 	
@@ -275,10 +316,28 @@ public class RegionInput implements ActionListener{
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			saveData();
+			rangRunning = true;
+			rangeButton.setEnabled(false);
+			rangeButton.setText("Running...");
 			ResultsRange sample = new ResultsRange(1000);
 			sample.calculate();
 			sample.resultsOut();
+			rangRunning = false;
+			rangeButton.setEnabled(true);
+			rangeButton.setText("Run Range Calculator");
+		}
+	}
+	
+	public class TableListener implements TableModelListener{
+		InputForm input;
+		
+		public TableListener(InputForm input){
+			this.input = input;
+		}
+		
+		public void tableChanged(TableModelEvent e) {
+			nextButton.setEnabled(true);
+			nextButton.setText("Save");
 		}
 	}
 }

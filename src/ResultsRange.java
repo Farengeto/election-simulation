@@ -89,7 +89,7 @@ public class ResultsRange extends Results{
 	
 	//convert the results into a txt file
 	public void resultsOut(){
-		resultsOut("Polls Output.txt","Votes Output.txt");
+		resultsOut("Range - Polls Output.txt","Range - Votes Output.txt");
 	}
 	
 	public void resultsOut(String p, String v){

@@ -68,7 +68,7 @@ public class Campaign extends Results{
 	
 	//convert the results into a txt file
 	public void resultsOut(){
-		resultsOut("Polls Output.txt","Votes Output.txt");
+		resultsOut("Campaign - Polls Output.txt","Campaign - Votes Output.txt");
 	}
 		
 	public void resultsOut(String p, String v){

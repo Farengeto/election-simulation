@@ -158,7 +158,7 @@ public class UpdatedVoting extends JFrame{
 			//setSize(width,height);
 			setExtendedState(MAXIMIZED_BOTH);
 		}
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {

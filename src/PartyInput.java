@@ -20,6 +20,7 @@ public class PartyInput implements ActionListener{
 	private JTextField sizeCounter;
 	private JButton countButton;
 	private InputForm input;
+	private JButton nextButton;
 	
 	//default from blank data set, default 3 parties
 	public PartyInput(InputForm input){
@@ -83,7 +84,7 @@ public class PartyInput implements ActionListener{
 		countButton = new JButton("Update");
 		countButton.addActionListener(this);
 		partySelect.add(countButton);
-		JButton nextButton = new JButton("Next");
+		nextButton = new JButton("Next");
 		nextButton.addActionListener(new PartyListener(input));
 		//create the JFrame
 		frame = new JFrame("Party Input Menu");
@@ -138,6 +139,9 @@ public class PartyInput implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			List<Party> newParties = new ArrayList<>();
 			for(int i = 0; i < dtm.getRowCount(); i++){
+				/*Color c = new Color((Integer)table.getValueAt(i,2),(Integer)table.getValueAt(i,3),(Integer)table.getValueAt(i,4));
+				double a =  (Double)(table.getValueAt(i,1))/100.0;
+				newParties.add(new Party((String)table.getValueAt(i,0),c,a));*/
 				Color c = new Color((Integer)table.getValueAt(i,2),(Integer)table.getValueAt(i,3),(Integer)table.getValueAt(i,4));
 				double a =  (Double)(table.getValueAt(i,1))/100.0;
 				newParties.add(new Party((String)table.getValueAt(i,0),c,a));
