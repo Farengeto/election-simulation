@@ -15,6 +15,14 @@ public class Party {
 		this("",new Color(128,128,128),0);
 	}
 	
+	public Party(String name,Color color){
+		this.name = name;
+		this.color = color;
+		this.approval = 0;
+		votes = 0;
+		seats = 0;
+	}
+	
 	public Party(String name,Color color,double approval){
 		this.name = name;
 		this.color = color;

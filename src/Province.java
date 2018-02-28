@@ -42,15 +42,17 @@ public class Province extends Division{
 	}
 	
 	public void addRegion(Region r){
-		regions.add(r);
-		population += r.getPopulation();
-		seats += r.getSeats();
+		if(regions.add(r)){
+			population += r.getPopulation();
+			seats += r.getSeats();
+		}
 	}
 	
 	public void removeRegion(Region r){
-		regions.remove(r);
-		population -= r.getPopulation();
-		seats -= r.getSeats();
+		if(regions.remove(r)){
+			population -= r.getPopulation();
+			seats -= r.getSeats();
+		}
 	}
 	
 	public List<Region> getRegions(){

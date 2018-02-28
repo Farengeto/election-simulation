@@ -19,23 +19,23 @@ public class PartyInput implements ActionListener{
 	private DefaultTableModel dtm;
 	private JTextField sizeCounter;
 	private JButton countButton;
-	private InputForm input;
+	private ElectionData input;
 	private JButton nextButton;
 	
 	//default from blank data set, default 3 parties
-	public PartyInput(InputForm input){
+	public PartyInput(ElectionData input){
 		this(input,3);
 	}
 	//default from blank data set, party count defined in size
-	public PartyInput(InputForm input, int size){
+	public PartyInput(ElectionData input, int size){
 		this(input,new Object[size][5]);
 	}
 	//default from blank data set, parties defined by given party list
-	public PartyInput(InputForm input, List<Party> parties){
+	public PartyInput(ElectionData input, List<Party> parties){
 		this(input,makeData(parties));
 	}
 	//generate from given data set, party count defined in size
-	public PartyInput(InputForm input, Object[][] data){
+	public PartyInput(ElectionData input, Object[][] data){
 		this.input = input;
 		Object[] columns = {"Party name","Approval (%)","Colour, Red (0-255)","Colour, Green (0-255)","Colour, Blue (0-255)"};
 		//initialize any empty values
@@ -129,9 +129,9 @@ public class PartyInput implements ActionListener{
 	
 	//"Next" button for window
 	public class PartyListener implements ActionListener{
-		InputForm input;
+		ElectionData input;
 		
-		public PartyListener(InputForm input){
+		public PartyListener(ElectionData input){
 			this.input = input;
 		}
 		

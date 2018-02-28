@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class RegionInput implements ActionListener{
 	private DefaultTableModel dtm;
 	private JTextField sizeCounter;
 	private JButton countButton;
-	private InputForm input;
+	private ElectionData input;
 	private JButton nextButton;
 	private JButton electionButton;
 	private JButton campaignButton;
@@ -36,19 +37,19 @@ public class RegionInput implements ActionListener{
 	private boolean rangRunning;
 	
 	//generate from party list and default 5 regions
-	public RegionInput(InputForm input){
+	public RegionInput(ElectionData input){
 		this(input,5);
 	}
 	//generate from party list and given number of regions
-	public RegionInput(InputForm input, int size){
+	public RegionInput(ElectionData input, int size){
 		this(input,new Object[size][input.getParties().size()+4]);
 	}
 	//generate from party list and region list
-	public RegionInput(InputForm input, List<Region> regions){
+	public RegionInput(ElectionData input, List<Region> regions){
 		this(input,makeData(input,regions));
 	}
 	//generate from party list and regional data set
-	public RegionInput(InputForm input, Object[][] data){
+	public RegionInput(ElectionData input, Object[][] data){
 		this.input = input;
 		//create columns
 		Object[] columns = new String[input.getParties().size()+4];
@@ -139,7 +140,7 @@ public class RegionInput implements ActionListener{
 	}
 	
 	//create the table data set from party and region data
-	private static Object[][] makeData(InputForm input, List<Region> regions){
+	private static Object[][] makeData(ElectionData input, List<Region> regions){
 		Object[][] data = new Object[regions.size()][input.getParties().size()+4];
 		int count = 0;
 		for(Region r : regions){
@@ -225,15 +226,15 @@ public class RegionInput implements ActionListener{
 		List<Region> newRegions = createRegions(newProvinces);
 		input.setProvinces(newProvinces);
 		input.setRegions(newRegions);
-		input.writeToFile();
+		input.writeToTextFile(new File("ElectionsIn.txt"));
 	}
 	
 	//"Save" button
 	//saves data to file
 	public class RegionListener implements ActionListener{
-		InputForm input;
+		ElectionData input;
 		
-		public RegionListener(InputForm input){
+		public RegionListener(ElectionData input){
 			this.input = input;
 		}
 		
@@ -260,9 +261,9 @@ public class RegionInput implements ActionListener{
 	//"Run Election" button
 	//runs UpdatedVoting
 	public class ElectionListener implements ActionListener{
-		InputForm input;
+		ElectionData input;
 		
-		public ElectionListener(InputForm input){
+		public ElectionListener(ElectionData input){
 			this.input = input;
 		}
 		
@@ -271,7 +272,7 @@ public class RegionInput implements ActionListener{
 			electionButton.setEnabled(false);
 			//perform election
 			electionButton.setText("Running...");
-			UpdatedVoting election = new UpdatedVoting(input.getOutFile());		
+			UpdatedVoting election = new UpdatedVoting("ElectionsIn.txt");		
 			election.update(0.10);
 			election.results();
 			election.setVisible(true);
@@ -286,9 +287,9 @@ public class RegionInput implements ActionListener{
 	//"Save and run Campaign" button
 	//saves data to file and runs Campaign
 	public class CampaignListener implements ActionListener{
-		InputForm input;
+		ElectionData input;
 		
-		public CampaignListener(InputForm input){
+		public CampaignListener(ElectionData input){
 			this.input = input;
 		}
 		
@@ -296,7 +297,7 @@ public class RegionInput implements ActionListener{
 			campRunning = true;
 			campaignButton.setEnabled(false);
 			campaignButton.setText("Running...");
-			Campaign sample = new Campaign(50,input.getOutFile());
+			Campaign sample = new Campaign(50,"ElectionsIn.txt");
 			sample.calculate();
 			sample.polls.setVisible(true);
 			sample.resultsOut();
@@ -309,9 +310,9 @@ public class RegionInput implements ActionListener{
 	//"Save and run Range" button
 	//saves data to file and runs ResultsRange
 	public class RangeListener implements ActionListener{
-		InputForm input;
+		ElectionData input;
 		
-		public RangeListener(InputForm input){
+		public RangeListener(ElectionData input){
 			this.input = input;
 		}
 		
@@ -329,9 +330,9 @@ public class RegionInput implements ActionListener{
 	}
 	
 	public class TableListener implements TableModelListener{
-		InputForm input;
+		ElectionData input;
 		
-		public TableListener(InputForm input){
+		public TableListener(ElectionData input){
 			this.input = input;
 		}
 		
