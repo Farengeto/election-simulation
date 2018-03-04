@@ -21,7 +21,9 @@ public abstract class Results {
 	public Results(String fileName){
 		lastSeats = new HashMap<>();
 		lastVotes = new HashMap<>();
-		polls = new UpdatedVoting(fileName);
+		try{
+			polls = new UpdatedVoting(fileName);
+		}catch(Exception e){}
 		seats = new HashMap<>();
 		votes = new HashMap<>();
 		file = fileName;

@@ -3,9 +3,11 @@ import javax.swing.JPanel;
 
 //superclass for result panels
 public abstract class ResultsPanel extends JPanel{
-	protected UpdatedVoting results;
+	protected ElectionData info;
+	protected VotingData results;
 	
-	public ResultsPanel(UpdatedVoting voting,Dimension dim){
+	public ResultsPanel(ElectionData election, VotingData voting, Dimension dim){
+		info = election;
 		results = voting;
 		this.setSize(dim);
 		this.setPreferredSize(dim);

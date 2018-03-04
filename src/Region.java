@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class Region extends Division{
 	private Province province;
-	private Map<Party,Double> support;
+	private Map<String,Double> support;
 	
 	//create blank region
 	public Region(){
@@ -22,11 +22,11 @@ public class Region extends Division{
 	
 	//create region with demographics in a province
 	public Region(String name, long pop, int seat,Province province){
-		this("",0,0,province,new HashMap<Party,Double>());
+		this(name,pop,seat,province,new HashMap<String,Double>());
 	}
 	
 	//create a region with demographics and party support levels in a province
-	public Region(String name, long pop, int seat,Province province, Map<Party,Double> support){
+	public Region(String name, long pop, int seat,Province province, Map<String,Double> support){
 		super(name,pop,seat);
 		this.province = province;
 		this.province.addRegion(this);
@@ -55,7 +55,11 @@ public class Region extends Division{
 		return province;
 	}
 	
-	public double getSupport(Party p){
+	public Map<String,Double> getSupport(){
+		return support;
+	}
+	
+	public double getSupport(String p){
 		if(support.get(p) == null){
 			return 0;
 		}
@@ -65,73 +69,13 @@ public class Region extends Division{
 	//updated the support values into corrected decimal percentages
 	public void rebalance(){
 		double count = 0;
-		Set<Party> parties = support.keySet();
-		for(Party p : parties){
+		Set<String> parties = support.keySet();
+		for(String p : parties){
 			count += support.get(p);
 		}
-		for(Party p : parties){
+		for(String p : parties){
 			double d = support.get(p) / count;
 			support.put(p,d);
-		}
-	}
-	
-	public void results(){
-		reset();
-		long count = population; //holds unallocated votes, if negative votes are overallocated
-		Set<Party> parties = support.keySet();
-		//calculate votes
-		for(Party p : parties){
-			long vote = (long)Math.round(support.get(p) * population);
-			count -= vote;
-			votes.put(p,vote);
-		}
-		//remove excess votes or add missing votes
-		while(count != 0)
-		for(Party p : parties){
-			if(count > 0){
-				votes.put(p,votes.get(p)+1);
-				count--;
-			}
-			if(count < 0){
-				votes.put(p,votes.get(p)-1);
-				count++;
-			}
-		}
-		
-		//Define quote for the largest remainder method
-		//Uses Hare quota, biased towards smaller parties
-		long quota = population/seats;
-		//Allocate seats according to the quota
-		int remainingSeats = seats;
-		Map<Party,Long> remainder = new HashMap<>();
-		for(Party p : parties){
-			results.put(p , (int)(votes.get(p) / quota));
-			remainingSeats -= results.get(p);
-			remainder.put(p, votes.get(p) % quota);
-		}
-		//allocate remaining seats using highest remainder method
-		while(remainingSeats > 0){
-			Party max = null;
-			//find party with largest remainder
-			for(Party p : parties){
-				if(max != null){
-					if(remainder.get(p) > remainder.get(max)){
-						max = p;
-					}
-					//if remainder is equal, assign to party with highest seat count first
-					else if(remainder.get(p) == remainder.get(max) && results.get(p) > results.get(max)){
-						max = p;
-					}
-				}
-				else{
-					max = p;
-				}
-			}
-			//give party with largest remainder an additional seat
-			//then set parties' remainder to zero
-			results.put(max, results.get(max)+1);
-			remainder.put(max, 0L);
-			remainingSeats--;
 		}
 	}
 	
@@ -143,31 +87,12 @@ public class Region extends Division{
 		for(Party p : parties){
 			regShift.put(p, Math.max(1.0 + random.nextGaussian()*shiftMargin,0.0));
 			//ensure party actually exists in region, then update
-			if(support.get(p) != null){
-				double updated = support.get(p) * natShift.get(p) * proShift.get(p) * regShift.get(p);
-				support.put(p, updated);
+			if(support.get(p.getName()) != null){
+				double updated = support.get(p.getName()) * natShift.get(p) * proShift.get(p) * regShift.get(p);
+				support.put(p.getName(), updated);
 			}
 		}
 		rebalance();
-	}
-	
-	public void checkValues(){
-		int sum = 0;
-		long pops = 0;
-		for(Party p : support.keySet()){
-			sum += results.get(p);
-			pops += votes.get(p);
-		}
-		System.out.println(sum + "/" + seats + " - " + pops + "/" + population);
-		if(sum != seats || pops != population){
-			double s = 0;
-			for(Party p : support.keySet()){
-				s += support.get(p);
-			}
-			System.out.println(s + " " + support);
-			System.out.println(results);
-			System.out.println(votes);
-		}
 	}
 	
 	public String toString(){

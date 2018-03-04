@@ -8,17 +8,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 //Table class for the regional results of the election
 public class RegionalResultsPanel extends JTable{	
-	private UpdatedVoting results;
+	protected ElectionData info;
+	protected VotingData results;
 	private boolean edit;
 	
 	//creates the class for an electoral data set 
-	public RegionalResultsPanel(UpdatedVoting voting){
-		this(voting,makeData(voting),makeColumns(voting));
-	}
-	
-	//creates the class for an electoral data set and the table data
-	public RegionalResultsPanel(UpdatedVoting voting,Object[][] data,Object[] columns){
-		super(data,columns);
+	public RegionalResultsPanel(ElectionData election, VotingData voting){
+		super(makeData(election, voting), makeColumns(election, voting));
+		info = election;
 		results = voting;
 		edit = false;
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
@@ -34,44 +31,40 @@ public class RegionalResultsPanel extends JTable{
 	}
 	
 	//generate the column headers from the data set
-	public static Object[] makeColumns(UpdatedVoting result){
-		List<Party> parties = result.getParties();
+	public static Object[] makeColumns(ElectionData election, VotingData voting){
+		List<Party> parties = election.getParties();
 		//resort parties 
-			parties.sort(new NationalComparator());
-		int count = 0;
-		Object[] columns = new String[parties.size()+3];
+			parties.sort(new NationalComparator(voting));
+		Object[] columns = new String[parties.size() + 4];
 		columns[0] = "Province";
 		columns[1] = "Region";
 		columns[2] = "Population";
-		for(Party p : parties){
-			columns[count+3] = p.getName(); 
-			count++;
+		columns[3] = "Seats";
+		for(int p = 0; p < parties.size(); p++){
+			columns[p+4] = parties.get(p).getName();
 		}
 		return columns;
 	}
 	
 	//generate the table data from the data set
-	public static Object[][] makeData(UpdatedVoting result){
+	public static Object[][] makeData(ElectionData election, VotingData voting){
 		//get current set of results
-		List<Party> parties = result.getParties();
-		List<Region> regions = result.getRegions();
+		List<Party> parties = election.getParties();
+		List<Region> regions = election.getRegions();
 		//resort parties 
-		parties.sort(new NationalComparator());
+		parties.sort(new NationalComparator(voting));
 		//get each region's province, name, demographics and votes
-		Object[][] data = new Object[regions.size()][parties.size()+3];
+		Object[][] data = new Object[regions.size()][parties.size()+4];
 		int count = 0;
 		for(Region r : regions){
 			data[count][0] = r.getProvince().getName();
 			data[count][1] = r.getName();
-			data[count][2] = Long.toString(r.getPopulation());
+			data[count][2] = r.getPopulation();
+			data[count][3] = r.getSeats();
 			int pCount = 0;
 			for(Party p : parties){
-				if(r.getResults().get(p) != null && r.getVotes().get(p) != null){
-					data[count][pCount+3] = r.getResults().get(p) + " - " + Math.round(1000.0 * (double)r.getVotes().get(p) / (double)r.getPopulation())/10.0 + "%";
-				}
-				else{
-					data[count][pCount+3] = "0 - N/A";
-				}
+				data[count][pCount+4] = voting.getSeatsRegion(r, p) + " - "
+						+ (Math.round(10000.0 * (double)voting.getVotesRegion(r, p) / (double)r.getPopulation()) / 100.0) + "%";
 				pCount++;
 			}
 			count++;
@@ -83,29 +76,24 @@ public class RegionalResultsPanel extends JTable{
 	//resorts columns so top national parties are shown first
 	public void updateTable(){
 		//get current set of results
-		List<Party> parties = results.getParties();
-		List<Region> regions = results.getRegions();
+		List<Party> parties = info.getParties();
+		List<Region> regions = info.getRegions();
 		edit = true; //enable editing of table
-		//resort parties 
-		parties.sort(new NationalComparator());
-		int count = 0;
+		//sort parties 
+		parties.sort(new NationalComparator(results));
 		//update column headers for sorting
-		for(Party p : parties){
-			getColumnModel().getColumn(count+3).setHeaderValue(p.getName());
-			count++;
+		for(int p = 0; p < parties.size(); p++){
+			getColumnModel().getColumn(p+4).setHeaderValue(parties.get(p).getName());
 		}
 		//replace all data values with the newest set
-		count = 0;
+		int count = 0;
 		for(Region r : regions){
 			int pCount = 0;
 			for(Party p : parties){
 				//check that data results are not null
-				if(r.getResults().get(p) != null && r.getVotes().get(p) != null){
-					setValueAt(r.getResults().get(p) + " - " + Math.round(1000.0 * (double)r.getVotes().get(p) / (double)r.getPopulation())/10.0 + "%", count, pCount+3);
-				}
-				else{
-					setValueAt("N/A", count, pCount+3);
-				}
+				setValueAt(results.getSeatsRegion(r, p) + " - "
+						+ (Math.round(10000.0 * (double)results.getVotesRegion(r, p) / (double)r.getPopulation()) / 100.0) + "%",
+						count, pCount+4);
 				pCount++;
 			}
 			count++;

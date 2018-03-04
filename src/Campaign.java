@@ -1,8 +1,4 @@
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.*;
-import javax.swing.JFrame;
-
 
 //simulates an N-day campaign period with a final election result
 public class Campaign extends Results{
@@ -30,13 +26,13 @@ public class Campaign extends Results{
 		//runs a first simulation on base data
 		//then iterates through the rest of the campaign with a randomized shift
 		for(int i = 0; i < length; i++){
-			polls.results();
+			polls.results(VotingType.PR_HARE);
 			addElection(polls);
 			polls.update(0.02);
 			polls.reset();
 		}
 		//run a final election
-		polls.results();
+		polls.results(VotingType.PR_HARE);
 	}
 	
 	//print election results to console

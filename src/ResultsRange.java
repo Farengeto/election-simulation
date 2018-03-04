@@ -46,12 +46,15 @@ public class ResultsRange extends Results{
 	public void calculate(){
 		//get data set for given number of tests
 		for(int t = 0; t < tests; t++){
-			//run simulated election after randomized shift
-			UpdatedVoting pResult = new UpdatedVoting(file);
-			pResult.update(0.10);
-			pResult.results();
-			//add votes and seats to the list
-			addElection(pResult);
+			try{
+				//run simulated election after randomized shift
+				UpdatedVoting pResult = new UpdatedVoting(file);
+				pResult.update(0.10);
+				pResult.results(VotingType.PR_HARE);
+				//add votes and seats to the list
+				addElection(pResult);
+			}
+			catch(Exception e){}
 		}
 		//calculate intervals
 		//uses median, 50% and 95% confidence intervals

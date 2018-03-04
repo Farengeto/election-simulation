@@ -1,18 +1,8 @@
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -90,13 +80,7 @@ public class InputRegion extends InputPanel {
 								tableData[i][4+j] = 0.0;
 							}
 							else{
-								Party op = electionData.getConversion(p);
-								if(op == null){
-									tableData[i][4+j] = 0.0;
-								}
-								else{
-									tableData[i][4+j] = r.getSupport(op)*100.0;
-								}
+								tableData[i][4+j] = r.getSupport(p.getName())*100.0;
 							}
 						}
 					}
@@ -135,9 +119,9 @@ public class InputRegion extends InputPanel {
 			String name = (String)table.getValueAt(i,1);
 			long population = (Long)table.getValueAt(i,2);
 			int seats = (Integer)table.getValueAt(i,3);
-			Map<Party,Double> support = new HashMap<>();
+			Map<String,Double> support = new HashMap<>();
 			for(int j = 0; j < partyCount; j++){
-				support.put(electionData.getParty(j), (Double)table.getValueAt(i, j+4));
+				support.put(electionData.getParty(j).getName(), (Double)table.getValueAt(i, j+4));
 			}
 			//find region's province and add it to the region
 			boolean provFound = false;

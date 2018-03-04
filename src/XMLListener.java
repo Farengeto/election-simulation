@@ -21,7 +21,7 @@ public class XMLListener implements ActionListener{
 	}
 	
 	/**
-	 * Imports the Network topology from a XML file
+	 * Imports the Election data from a XML file
 	 * @param ActionEvent e
 	 * @return void
 	 */
