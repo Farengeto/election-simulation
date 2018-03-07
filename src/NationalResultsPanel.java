@@ -44,7 +44,8 @@ public class NationalResultsPanel extends ResultsPanel{
 		g.fillOval(50,40+35*parties.size(),200,200);
 		int startAngle = 0;
 		for(Party p : parties) {
-			int arcAngle = (int) Math.round((double)results.getSeatsNation(p)/info.getSeats() * 360.0);
+			int arcAngle = (int) Math.round((double)results.getSeatsNation(p)/results.getSeatsTotal() * 360.0);
+			System.out.println(p.getName() + "\t" + results.getSeatsNation(p) + "\t" + results.getSeatsTotal() + "\t" + arcAngle);
 			g.setColor(p.getColor());
 			g.fillArc(50, 40+35*parties.size(), 200, 200, 
 					startAngle, arcAngle);
@@ -57,7 +58,7 @@ public class NationalResultsPanel extends ResultsPanel{
 		g.fillOval(50,290+35*parties.size(),200,200);
 		startAngle = 0;
 		for(Party p : parties) {
-			int arcAngle = (int) Math.round((double)results.getVotesNation(p)/info.getPopulation() * 360.0);
+			int arcAngle = (int) Math.round((double)results.getVotesNation(p)/results.getVotesTotal() * 360.0);
 			g.setColor(p.getColor());
 			g.fillArc(50, 290+35*parties.size(), 200, 200, 
 					startAngle, arcAngle);

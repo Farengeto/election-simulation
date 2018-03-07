@@ -3,8 +3,8 @@ import java.util.Map;
 
 
 public class VotingDivisionData {
-	private Map<String, Long> votes;
-	private Map<String, Integer> seats;
+	protected Map<String, Long> votes;
+	protected Map<String, Integer> seats;
 	
 	public VotingDivisionData(){
 		votes = new HashMap<>();
@@ -14,6 +14,14 @@ public class VotingDivisionData {
 	//Checks if division has a complete data record for a party
 	public boolean hasData(String party){
 		return (votes.containsKey(party) && seats.containsKey(party));
+	}
+	
+	/**
+	 * Clears election data
+	 */
+	public void reset(){
+		votes.clear();
+		seats.clear();
 	}
 	
 	public long getVotes(String party) {

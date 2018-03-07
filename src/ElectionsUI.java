@@ -26,7 +26,7 @@ public class ElectionsUI {
 	
 	public ElectionsUI(ElectionData data){
 		electionData = data;
-		votingType = VotingType.PR_HARE;
+		votingType = VotingType.PR_DROOP;
 		votingTypes = new HashMap<>();
 		
 		GUI = new JFrame("Election Simulator");
@@ -50,35 +50,23 @@ public class ElectionsUI {
 		//fileMenu.add(saveText);
 		menu.add(fileMenu);
 		
-		JMenu votingMenu = new JMenu("Voting");
-		JMenuItem PRRegionHareMenu = new JMenuItem("Proportional Representation (Regional, Hare quota)");
-		JMenuItem PRRegionDroopMenu = new JMenuItem("Proportional Representation (Regional, Droop quota)");
-		JMenuItem PRNationHareMenu = new JMenuItem("Proportional Representation (National, Hare quota)");
-		JMenuItem PRNationDroopMenu = new JMenuItem("Proportional Representation (National, Droop quota)");
-		JMenuItem FPTPRegionMenu = new JMenuItem("First-Past-the-Post (Regional)");
-		JMenuItem FPTPProvinceMenu = new JMenuItem("First-Past-the-Post (Provincial)");
-		JMenuItem FPTPNationMenu = new JMenuItem("First-Past-the-Post (National)");
-		PRRegionHareMenu.addActionListener(new VotingTypeListener(this, VotingType.PR_HARE));
-		PRRegionDroopMenu.addActionListener(new VotingTypeListener(this, VotingType.PR_DROOP));
-		PRNationHareMenu.addActionListener(new VotingTypeListener(this, VotingType.PR_HARE_NATIONAL));
-		PRNationDroopMenu.addActionListener(new VotingTypeListener(this, VotingType.PR_DROOP_NATIONAL));
-		FPTPRegionMenu.addActionListener(new VotingTypeListener(this, VotingType.FPTP));
-		FPTPProvinceMenu.addActionListener(new VotingTypeListener(this, VotingType.FPTP_PROVINCE));
-		FPTPNationMenu.addActionListener(new VotingTypeListener(this, VotingType.FPTP_NATIONAL));
-		votingTypes.put(VotingType.PR_HARE, PRRegionHareMenu);
-		votingTypes.put(VotingType.PR_DROOP, PRRegionDroopMenu);
-		votingTypes.put(VotingType.PR_HARE_NATIONAL, PRNationHareMenu);
-		votingTypes.put(VotingType.PR_DROOP_NATIONAL, PRNationDroopMenu);
-		votingTypes.put(VotingType.FPTP, FPTPRegionMenu);
-		votingTypes.put(VotingType.FPTP_PROVINCE, FPTPProvinceMenu);
-		votingTypes.put(VotingType.FPTP_NATIONAL, FPTPNationMenu);
-		votingMenu.add(PRRegionHareMenu);
-		votingMenu.add(PRRegionDroopMenu);
-		votingMenu.add(PRNationHareMenu);
-		votingMenu.add(PRNationDroopMenu);
-		votingMenu.add(FPTPRegionMenu);
-		votingMenu.add(FPTPProvinceMenu);
-		votingMenu.add(FPTPNationMenu);
+		JMenu votingMenu = new JMenu("Voting");	
+		votingMenu.add(createVotingTypeMenuItem(VotingType.FPTP, "First-Past-the-Post (Regional)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.FPTP_PROVINCE, "First-Past-the-Post (Provincial)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.FPTP_NATIONAL, "First-Past-the-Post (National)"));
+		votingMenu.addSeparator();
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE, "Proportional Representation (Regional, Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP, "Proportional Representation (Regional, Droop quota)"));
+		//votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE_PROVINCE, "Proportional Representation (Provincial, Hare quota)"));
+		//votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP_PROVINCE, "Proportional Representation (Provincial, Droop quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE_NATIONAL, "Proportional Representation (National, Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP_NATIONAL, "Proportional Representation (National, Droop quota)"));
+		votingMenu.addSeparator();
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_HARE, "Mixed-Member Majoritarian (Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_DROOP, "Mixed-Member Majoritarian (Droop quota)"));
+		votingMenu.addSeparator();
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_DHONDT, "Mixed-Member Proportional (D'Hondt Method)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_SAINTELAGUE, "Mixed-Member Proportional (Webster/Sainte-Lague Method)"));
 		menu.add(votingMenu);
 		
 		
@@ -138,6 +126,14 @@ public class ElectionsUI {
 		//GUI.setSize(400, 500);
 		GUI.setVisible(true);
 		GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	//Method to condense voting type creation
+	private JMenuItem createVotingTypeMenuItem(VotingType votingType, String text){
+		JMenuItem button = new JMenuItem(text);
+		button.addActionListener(new VotingTypeListener(this, votingType));
+		votingTypes.put(votingType, button);
+		return button;
 	}
 	
 	public static void main(String[] args){

@@ -1,18 +1,33 @@
-import java.util.HashMap;
 import java.util.Map;
 
 
-public class VotingRegionData {
+public class VotingRegionData extends VotingDivisionData {
 	private Region region;
 	private Map<String, Double> support;
-	private Map<String, Long> votes;
-	private Map<String, Integer> seats;
 	
 	public VotingRegionData(Region r){
+		super();
 		region = r;
 		support = region.getSupport();
-		votes = new HashMap<>();
-		seats = new HashMap<>();
+	}
+	
+	public Region getRegion(){
+		return region;
+	}
+	
+	/**
+	 * Clears election data including any modified support values
+	 */
+	public void reset(){
+		super.reset();
+		support = region.getSupport();
+	}
+	
+	/**
+	 * Clears election data while keeping any modified support values
+	 */
+	public void resetResults(){
+		
 	}
 	
 	public double getSupport(String party) {
@@ -20,24 +35,6 @@ public class VotingRegionData {
 		if(toReturn == null)
 			toReturn = 0.0;
 		return toReturn;
-	}
-	
-	public long getVotes(String party) {
-		Long toReturn = votes.get(party);
-		if(toReturn == null)
-			toReturn = 0L;
-		return toReturn;
-	}
-	
-	public int getSeats(String party) {
-		Integer toReturn = seats.get(party);
-		if(toReturn == null)
-			toReturn = 0;
-		return toReturn;
-	}
-	
-	public Region getRegion(){
-		return region;
 	}
 	
 	public void setSupport(Map<String, Double> support) {
@@ -53,13 +50,5 @@ public class VotingRegionData {
 		}
 		
 		this.support = support;
-	}
-	
-	public void setVotes(Map<String, Long> votes) {
-		this.votes = votes;
-	}
-	
-	public void setSeats(Map<String, Integer> seats) {
-		this.seats = seats;
 	}
 }
