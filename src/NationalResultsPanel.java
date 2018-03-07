@@ -45,7 +45,6 @@ public class NationalResultsPanel extends ResultsPanel{
 		int startAngle = 0;
 		for(Party p : parties) {
 			int arcAngle = (int) Math.round((double)results.getSeatsNation(p)/results.getSeatsTotal() * 360.0);
-			System.out.println(p.getName() + "\t" + results.getSeatsNation(p) + "\t" + results.getSeatsTotal() + "\t" + arcAngle);
 			g.setColor(p.getColor());
 			g.fillArc(50, 40+35*parties.size(), 200, 200, 
 					startAngle, arcAngle);

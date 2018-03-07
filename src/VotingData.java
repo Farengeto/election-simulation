@@ -530,17 +530,13 @@ public class VotingData {
 			String pName = p.getName();
 			int totalSeats = 0;
 			long totalVotes = 0;
-			System.out.print(pName);
 			if(nationalSeats.containsKey(pName)){
 				totalSeats += nationalSeats.get(pName);
-				System.out.print("\t" + nationalSeats.get(pName));
 			}
 			for(Region r : regionData.keySet()){
 				totalSeats += regionData.get(r).getSeats(pName);
-				System.out.print("\t" + regionData.get(r).getSeats(pName));
 				totalVotes += regionData.get(r).getVotes(pName);
 			}
-			System.out.println("\t" + totalSeats);
 			seats.put(pName, totalSeats);
 			votes.put(pName, totalVotes);
 		}
