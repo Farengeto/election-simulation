@@ -73,9 +73,6 @@ public class UpdatedVoting extends JFrame{
 		//Prevent frame size from exceeding screen size
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if(screenSize.getWidth() <= getWidth() || screenSize.getHeight() <= getHeight()){
-			//int width = (int)Math.min(screenSize.getWidth(),getWidth());
-			//int height = (int)Math.min(screenSize.getHeight(),getHeight());
-			//setSize(width,height);
 			setExtendedState(MAXIMIZED_BOTH);
 		}
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,7 +95,7 @@ public class UpdatedVoting extends JFrame{
 	//print results to the console
 	public void printResults(){
 		System.out.println("Results:");
-		List<Party> parties = getParties();
+		List<Party> parties = electionData.getParties();
 		parties.sort(new NationalComparator(votingData));
 		for(Party p : parties){
 			System.out.println(p.getResults());
@@ -110,35 +107,8 @@ public class UpdatedVoting extends JFrame{
 			System.out.println();
 		}
 	}
-		
-
-	public void reset(){
-		/*for(Party p : electionData.getParties()){
-			p.setResults(0,0);
-		}*/
-	}
 	
 	//get methods
-	public int getSeats(){
-		return electionData.getSeats();
-	}
-	
-	public long getPopulation(){
-		return electionData.getPopulation();
-	}
-	
-	public List<Province> getProvinces(){
-		return electionData.getProvinces();
-	}
-	
-	public List<Region> getRegions(){
-		return electionData.getRegions();
-	}
-	
-	public List<Party> getParties(){
-		return electionData.getParties();
-	}
-	
 	public Map<Party,Long> getVotes(){
 		Map<Party,Long> v = new HashMap<>();
 		for(Party p : electionData.getParties()){

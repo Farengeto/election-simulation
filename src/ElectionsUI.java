@@ -111,7 +111,7 @@ public class ElectionsUI {
 		//campaignButton.setEnabled(false);
 		RunElectionListener runRangeListener = new RunElectionListener(this, ElectionModes.RANGE);
 		rangeButton.addActionListener(runRangeListener);
-		rangeButton.setEnabled(false);
+		//rangeButton.setEnabled(false);
 		buttonPanel.add(saveButton);
 		buttonPanel.add(electionButton);
 		buttonPanel.add(partiesButton);
@@ -218,9 +218,10 @@ public class ElectionsUI {
 				election.setVisible(true);
 				break;
 			case CAMPAIGN:
-				CampaignFrame campaign = new CampaignFrame(electionData, votingType);
+				new CampaignFrame(electionData, votingType);
 				break;
 			case RANGE:
+				new ResultsRangeFrame(electionData, votingType);
 				break;
 		}
 	}

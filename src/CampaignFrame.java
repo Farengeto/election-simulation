@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Random;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -15,7 +14,7 @@ public class CampaignFrame extends ElectionGridFrame{
 	protected void createDTM() {
 		int pSize = electionData.getParties().size();
 		Object[] tableColumns = new Object[pSize+1];
-		tableColumns[0] = (Object)"Poll Number:";
+		tableColumns[0] = (Object)"Poll Number";
 		for(int p = 0; p < pSize; p++){
 			tableColumns[p+1] = electionData.getParties().get(p).getName();
 		}
@@ -77,8 +76,8 @@ public class CampaignFrame extends ElectionGridFrame{
 				s += "\t\t<Party name=\"" + electionData.getParty(p).getName() + "\">\n";
 				String value = (String)dtm.getValueAt(d, p+1);
 				int splitIndex = value.lastIndexOf("-");
-				s += "\t\t\t<Seats>" + value.substring(0, splitIndex-1) + "</Seats>";
-				s += "\t\t\t<Percentage>" + value.substring(splitIndex+2) + "</Percentage>";
+				s += "\t\t\t<Seats>" + value.substring(0, splitIndex-1) + "</Seats>\n";
+				s += "\t\t\t<Percentage>" + value.substring(splitIndex+2) + "</Percentage>\n";
 				s += "\t\t</Party>\n";
 			}
 			s += "\t</Poll>\n";
