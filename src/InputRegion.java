@@ -91,22 +91,34 @@ public class InputRegion extends InputPanel {
 	}
 	
 	public void changeTableRows(){
-		int rows = Integer.parseInt(sizeCounter.getText());
-		int partyCount = electionData.getParties().size();
-		if(dtm != null){
-			while(rows < dtm.getRowCount()){
-				dtm.removeRow(dtm.getRowCount()-1);
-			}
-			while(rows > dtm.getRowCount()){
-				Object[] newRow = new Object[partyCount+4];
-				newRow[2] = 0L;
-				newRow[3] = 0;
-				for(int p = 0; p < partyCount; p++){
-					newRow[p+4] = 0.0;
+		try{
+			int rows = Integer.parseInt(sizeCounter.getText());
+			if(rows > 0){
+				int partyCount = electionData.getParties().size();
+				if(dtm != null){
+					while(rows < dtm.getRowCount()){
+						dtm.removeRow(dtm.getRowCount()-1);
+					}
+					while(rows > dtm.getRowCount()){
+						Object[] newRow = new Object[partyCount+4];
+						newRow[2] = 0L;
+						newRow[3] = 0;
+						for(int p = 0; p < partyCount; p++){
+							newRow[p+4] = 0.0;
+						}
+						dtm.addRow(newRow);
+					}
+					dtm.fireTableDataChanged();
 				}
-				dtm.addRow(newRow);
 			}
-			dtm.fireTableDataChanged();
+			else{
+				System.err.println("Invalid row count: " + rows);
+				return;
+			}
+		}
+		catch(Exception ex){
+			System.err.println(ex.getMessage());
+			return;
 		}
 	}
 

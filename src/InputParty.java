@@ -65,16 +65,28 @@ public class InputParty extends InputPanel {
 	}
 	
 	public void changeTableRows(){
-		int rows = Integer.parseInt(sizeCounter.getText());
-		if(dtm != null){
-			while(rows < dtm.getRowCount()){
-				dtm.removeRow(dtm.getRowCount()-1);
+		try{
+			int rows = Integer.parseInt(sizeCounter.getText());
+			if(rows > 0){
+				if(dtm != null){
+					while(rows < dtm.getRowCount()){
+						dtm.removeRow(dtm.getRowCount()-1);
+					}
+					while(rows > dtm.getRowCount()){
+						Object[] newRow = {"",0.0,128,128,128};
+						dtm.addRow(newRow);
+					}
+					dtm.fireTableDataChanged();
+				}
 			}
-			while(rows > dtm.getRowCount()){
-				Object[] newRow = {"",0.0,128,128,128};
-				dtm.addRow(newRow);
+			else{
+				System.err.println("Invalid row count: " + rows);
+				return;
 			}
-			dtm.fireTableDataChanged();
+		}
+		catch(Exception ex){
+			System.err.println(ex.getMessage());
+			return;
 		}
 	}
 
