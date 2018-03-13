@@ -23,7 +23,6 @@ public class ElectionData{
 	private List<Province> provinces;
 	private List<Region> regions;
 	private List<Party> parties;
-	public boolean done = false;
 	
 	//create the input form using either the default or a given file
 	public ElectionData(){
@@ -426,21 +425,23 @@ public class ElectionData{
 		election.addParty(new Party("Red Party", new Color(255, 0, 0)));
 		election.addParty(new Party("Blue Party", new Color(0, 0, 255)));
 		
-		Province p = new Province("Subdivision");
-		election.addProvince(p);
+		Province p1 = new Province("Subdivision A");
+		election.addProvince(p1);
+		Province p2 = new Province("Subdivision B");
+		election.addProvince(p2);
 		
 		Map<String, Double> support = new HashMap<>();
 		support.put(election.getParty(0).getName(), 0.6);
 		support.put(election.getParty(1).getName(), 0.4);
-		election.addRegion(new Region("City A", 1000, 5, p, support));
+		election.addRegion(new Region("City A", 1000, 5, p1, support));
 		support = new HashMap<>();
 		support.put(election.getParty(0).getName(), 0.4);
 		support.put(election.getParty(1).getName(), 0.6);
-		election.addRegion(new Region("City B", 600, 3, p, support));
+		election.addRegion(new Region("City B", 600, 3, p1, support));
 		support = new HashMap<>();
 		support.put(election.getParty(0).getName(), 0.5);
 		support.put(election.getParty(1).getName(), 0.5);
-		election.addRegion(new Region("City C", 400, 2, p, support));
+		election.addRegion(new Region("City C", 400, 2, p2, support));
 		
 		return election;
 	}

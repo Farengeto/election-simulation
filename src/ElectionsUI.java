@@ -57,16 +57,20 @@ public class ElectionsUI {
 		votingMenu.addSeparator();
 		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE, "Proportional Representation (Regional, Hare quota)"));
 		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP, "Proportional Representation (Regional, Droop quota)"));
-		//votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE_PROVINCE, "Proportional Representation (Provincial, Hare quota)"));
-		//votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP_PROVINCE, "Proportional Representation (Provincial, Droop quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE_PROVINCE, "Proportional Representation (Provincial, Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP_PROVINCE, "Proportional Representation (Provincial, Droop quota)"));
 		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_HARE_NATIONAL, "Proportional Representation (National, Hare quota)"));
 		votingMenu.add(createVotingTypeMenuItem(VotingType.PR_DROOP_NATIONAL, "Proportional Representation (National, Droop quota)"));
 		votingMenu.addSeparator();
-		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_HARE, "Mixed-Member Majoritarian (Hare quota)"));
-		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_DROOP, "Mixed-Member Majoritarian (Droop quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_HARE_PROVINCE, "Mixed-Member Majoritarian (Provincial, Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_DROOP_PROVINCE, "Mixed-Member Majoritarian (Provincial, Droop quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_HARE_NATIONAL, "Mixed-Member Majoritarian (National, Hare quota)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMM_DROOP_NATIONAL, "Mixed-Member Majoritarian (National, Droop quota)"));
 		votingMenu.addSeparator();
-		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_DHONDT, "Mixed-Member Proportional (D'Hondt Method)"));
-		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_SAINTELAGUE, "Mixed-Member Proportional (Webster/Sainte-Lague Method)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_DHONDT_PROVINCE, "Mixed-Member Proportional (Provincial, D'Hondt Method)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_SAINTELAGUE_PROVINCE, "Mixed-Member Proportional (Provincial, Webster/Sainte-Lague Method)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_DHONDT_NATIONAL, "Mixed-Member Proportional (National, D'Hondt Method)"));
+		votingMenu.add(createVotingTypeMenuItem(VotingType.MMP_SAINTELAGUE_NATIONAL, "Mixed-Member Proportional (National, Webster/Sainte-Lague Method)"));
 		menu.add(votingMenu);
 		
 		
@@ -213,7 +217,7 @@ public class ElectionsUI {
 		switch(electionType){
 			case ELECTION:
 				UpdatedVoting election = new UpdatedVoting(electionData);
-				election.update(0.10);
+				//election.update(0.10);
 				election.results(votingType);
 				election.setVisible(true);
 				break;

@@ -11,17 +11,19 @@ public class VotingData {
 	private VotingType lastVotingType = VotingType.FPTP;
 	
 	private Map<String, Integer> nationalSeats; //Seats that only exist at a national level
+	private Map<Province, Map<String, Integer>> provincialSeats; //Seats that only exist at a provincial level
 	
-	private static ProportionalMethod hareMethod = (votes, seats) -> votes/seats;
-	private static ProportionalMethod droopMethod = (votes, seats) -> (votes/(seats + 1)) + 1;
-	private static ProportionalMethod dHondtMethod = (votes, seats) -> votes/(seats + 1);
-	private static ProportionalMethod sainteLagueMethod = (votes, seats) -> votes/((2 * seats) + 1);
+	private static final ProportionalMethod hareMethod = (votes, seats) -> votes/seats;
+	private static final ProportionalMethod droopMethod = (votes, seats) -> (votes/(seats + 1)) + 1;
+	private static final ProportionalMethod dHondtMethod = (votes, seats) -> votes/(seats + 1);
+	private static final ProportionalMethod sainteLagueMethod = (votes, seats) -> votes/((2 * seats) + 1);
 	
 	public VotingData(ElectionData electionSource){
 		source = electionSource;
 		regionData = new HashMap<>();
 		provinceData = new HashMap<>();
 		nationalSeats = new HashMap<>();
+		provincialSeats = new HashMap<>();
 		for(Region r : source.getRegions()){
 			regionData.put(r, new VotingRegionData(r));
 		}
@@ -99,19 +101,29 @@ public class VotingData {
 			case FPTP_NATIONAL:
 				firstPastThePostNational();
 				break;
-			case MMP_DHONDT:
-				mixedMemberProportional(dHondtMethod);
+			case MMP_DHONDT_PROVINCE:
+				mixedMemberProportionalProvincial(dHondtMethod);
 				break;
-			case MMP_SAINTELAGUE:
-				mixedMemberProportional(sainteLagueMethod);
+			case MMP_SAINTELAGUE_PROVINCE:
+				mixedMemberProportionalProvincial(sainteLagueMethod);
 				break;
-			case MMM_HARE:
-				mixedMemberMajoritarian(hareMethod);
+			case MMP_DHONDT_NATIONAL:
+				mixedMemberProportionalNational(dHondtMethod);
 				break;
-			case MMM_DROOP:
-				mixedMemberMajoritarian(droopMethod);
+			case MMP_SAINTELAGUE_NATIONAL:
+				mixedMemberProportionalNational(sainteLagueMethod);
 				break;
-			default:
+			case MMM_HARE_PROVINCE:
+				mixedMemberMajoritarianProvincial(hareMethod);
+				break;
+			case MMM_DROOP_PROVINCE:
+				mixedMemberMajoritarianProvincial(droopMethod);
+				break;
+			case MMM_HARE_NATIONAL:
+				mixedMemberMajoritarianNational(hareMethod);
+				break;
+			case MMM_DROOP_NATIONAL:
+				mixedMemberMajoritarianNational(droopMethod);
 				break;
 		}
 	}
@@ -195,7 +207,53 @@ public class VotingData {
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
 	private void proportionalProvincial(ProportionalMethod quotaMethod){
-		
+		Map<String,Long> votes;
+		Map<String, Integer> provinceSeats;
+		Map<String,Long> remainder;
+		for(Province pr : source.getProvinces()){
+			votes = new HashMap<>();
+			provinceSeats = new HashMap<>();
+			remainder = new HashMap<>();
+			
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long totalVotes = 0;
+				for(Region r : pr.getRegions()){
+					totalVotes += regionData.get(r).getVotes(pName);
+				}
+				votes.put(pName, totalVotes);
+			}
+			
+			long quota = quotaMethod.getValue(pr.getPopulation(), pr.getSeats());
+			int remainingSeats = pr.getSeats();
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long pVotes = votes.get(pName);
+				int pSeats = (int)(pVotes / quota);
+				remainingSeats -= pSeats;
+				provinceSeats.put(pName, pSeats);
+				remainder.put(pName, pVotes % quota);
+			}
+			
+			while(remainingSeats > 0){
+				long max = 0;
+				String winner = "";
+				
+				for(String p : remainder.keySet()){
+					long pVotes = remainder.get(p);
+					if(pVotes > max){
+						max = pVotes;
+						winner = p;
+					}
+				}
+					
+				provinceSeats.put(winner, provinceSeats.get(winner)+1);
+				remainder.remove(winner);
+				remainingSeats--;
+			}
+			
+			provincialSeats.put(pr, provinceSeats);
+		}
 	}
 	
 	/**
@@ -366,10 +424,95 @@ public class VotingData {
 	/**
 	 * Calculates seats allocations according to a mixed member majoritarian system.
 	 * Plurality allocation is done at the regional level
+	 * Proportional allocation is done at the provincial level
+	 * @param quotaMethod The type of largest remainder method to be used.
+	 */
+	private void mixedMemberMajoritarianProvincial(ProportionalMethod quotaMethod){
+		for(Region r : regionData.keySet()){
+			VotingRegionData data = regionData.get(r);
+			Map<String,Integer> seats = new HashMap<>();
+			
+			long max = 0;
+			String winner = "";
+			
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long pVotes = data.getVotes(pName);
+				if(pVotes > max){
+					max = pVotes;
+					winner = pName;
+				}
+			}
+			
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				int seatsWon = 0;
+				
+				if(pName.equals(winner)){
+					seatsWon = r.getSeats();
+				}
+				
+				seats.put(pName, seatsWon);
+			}
+			data.setSeats(seats);
+		}
+		
+		Map<String,Long> votes;
+		Map<String,Long> remainder;
+		Map<String, Integer> provinceSeats;
+		for(Province pr : source.getProvinces()){
+			votes = new HashMap<>();
+			remainder = new HashMap<>();
+			provinceSeats = new HashMap<>();
+			
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long totalVotes = 0;
+				for(Region r : pr.getRegions()){
+					totalVotes += regionData.get(r).getVotes(pName);
+				}
+				votes.put(pName, totalVotes);
+			}
+			
+			long quota = quotaMethod.getValue(pr.getPopulation(), pr.getSeats());
+			int remainingSeats = pr.getSeats();
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long pVotes = votes.get(pName);
+				int pSeats = (int)(pVotes / quota);
+				remainingSeats -= pSeats;
+				provinceSeats.put(pName, pSeats);
+				remainder.put(pName, pVotes % quota);
+			}
+				
+			while(remainingSeats > 0){
+				long max = 0;
+				String winner = "";
+				
+				for(String p : remainder.keySet()){
+					long pVotes = remainder.get(p);
+					if(pVotes > max){
+						max = pVotes;
+						winner = p;
+					}
+				}
+					
+				provinceSeats.put(winner, provinceSeats.get(winner)+1);
+				remainder.remove(winner);
+				remainingSeats--;
+			}
+			
+			provincialSeats.put(pr, provinceSeats);
+		}
+	}
+	
+	/**
+	 * Calculates seats allocations according to a mixed member majoritarian system.
+	 * Plurality allocation is done at the regional level
 	 * Proportional allocation is done at the national level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void mixedMemberMajoritarian(ProportionalMethod quotaMethod){
+	private void mixedMemberMajoritarianNational(ProportionalMethod quotaMethod){
 		for(Region r : regionData.keySet()){
 			VotingRegionData data = regionData.get(r);
 			Map<String,Integer> seats = new HashMap<>();
@@ -442,11 +585,98 @@ public class VotingData {
 	/**
 	 * Calculates seats allocations according to a mixed member proportional system.
 	 * Plurality allocation is done at the regional level
+	 * Proportional allocation is done at the provincial level
+	 * Does not use overhang seats
+	 * @param quotientMethod The type of highest quotient method to be used.
+	 */
+	private void mixedMemberProportionalProvincial(ProportionalMethod quotientMethod){
+		Map<String,Long> totalVotes;
+		Map<String,Integer> totalSeats;
+		Map<String,Integer> provinceSeats;
+		for(Province pr : source.getProvinces()){
+			totalVotes = new HashMap<>();
+			totalSeats = new HashMap<>();
+			provinceSeats = new HashMap<>();
+			
+			//Calculate local seats using FPTP
+			Map<String,Integer> seats;
+			for(Region r : pr.getRegions()){
+				VotingRegionData data = regionData.get(r);
+				seats = new HashMap<>();
+				
+				long max = 0;
+				String winner = "";
+				
+				for(Party p : source.getParties()){
+					String pName = p.getName();
+					long pVotes = data.getVotes(pName);
+					if(pVotes > max){
+						max = pVotes;
+						winner = pName;
+					}
+					if(totalVotes.containsKey(pName)){
+						totalVotes.put(pName, pVotes + totalVotes.get(pName));
+					}
+					else{
+						totalVotes.put(pName, pVotes);
+						totalSeats.put(pName, 0);
+						provinceSeats.put(pName, 0);
+					}
+				}
+				
+				for(Party p : source.getParties()){
+					String pName = p.getName();
+					int seatsWon = 0;
+					
+					if(pName.equals(winner)){
+						seatsWon = r.getSeats();
+					}
+					
+					seats.put(pName, seatsWon);
+					totalSeats.put(pName, seatsWon + totalSeats.get(pName));
+				}
+				data.setSeats(seats);
+			}
+			
+			//Calculate remaining seats using quotient
+			int remainingSeats = pr.getSeats();
+			Map<String,Long> quotients = new HashMap<>();
+			for(Party p : source.getParties()){
+				String pName = p.getName();
+				long quotient = quotientMethod.getValue(totalVotes.get(pName), totalSeats.get(pName));
+				quotients.put(pName, quotient);
+			}
+			
+			while(remainingSeats > 0){
+				long max = 0;
+				String winner = "";
+				
+				for(String p : quotients.keySet()){
+					long pVotes = quotients.get(p);
+					if(pVotes > max){
+						max = pVotes;
+						winner = p;
+					}
+				}
+					
+				provinceSeats.put(winner, provinceSeats.get(winner)+1);
+				long newQuotient = quotientMethod.getValue(totalVotes.get(winner), totalSeats.get(winner) + provinceSeats.get(winner));
+				quotients.put(winner, newQuotient);
+				remainingSeats--;
+			}
+			
+			provincialSeats.put(pr, provinceSeats);
+		}
+	}
+	
+	/**
+	 * Calculates seats allocations according to a mixed member proportional system.
+	 * Plurality allocation is done at the regional level
 	 * Proportional allocation is done at the national level
 	 * Does not use overhang seats
 	 * @param quotientMethod The type of highest quotient method to be used.
 	 */
-	private void mixedMemberProportional(ProportionalMethod quotientMethod){
+	private void mixedMemberProportionalNational(ProportionalMethod quotientMethod){
 		Map<String,Long> totalVotes = new HashMap<>();
 		Map<String,Integer> totalSeats = new HashMap<>();
 		
@@ -489,7 +719,7 @@ public class VotingData {
 			data.setSeats(seats);
 		}
 		
-		//Calculate remaining seats using D'Hondt Method
+		//Calculate remaining seats using quotient
 		int remainingSeats = source.getSeats();
 		Map<String,Long> quotients = new HashMap<>();
 		for(Party p : source.getParties()){
@@ -503,15 +733,12 @@ public class VotingData {
 			String winner = "";
 			
 			for(String p : quotients.keySet()){
-				System.out.println(p + "\t" + totalVotes.get(p) + "\t" + quotients.get(p) + "\t" + totalSeats.get(p) + "\t" + nationalSeats.get(p));
 				long pVotes = quotients.get(p);
 				if(pVotes > max){
 					max = pVotes;
 					winner = p;
 				}
 			}
-			
-			System.out.println("Winner:\t" + winner);
 				
 			nationalSeats.put(winner, nationalSeats.get(winner)+1);
 			long newQuotient = quotientMethod.getValue(totalVotes.get(winner), totalSeats.get(winner) + nationalSeats.get(winner));
@@ -532,6 +759,14 @@ public class VotingData {
 			long totalVotes = 0;
 			if(nationalSeats.containsKey(pName)){
 				totalSeats += nationalSeats.get(pName);
+			}
+			for(Province pr : source.getProvinces()){
+				if(provincialSeats.containsKey(pr)){
+					Map<String, Integer> provinceSeats = provincialSeats.get(pr);
+					if(provinceSeats.containsKey(pName)){
+						totalSeats += provinceSeats.get(pName);
+					}
+				}
 			}
 			for(Region r : regionData.keySet()){
 				totalSeats += regionData.get(r).getSeats(pName);
@@ -556,6 +791,12 @@ public class VotingData {
 			String pName = p.getName();
 			int totalSeats = 0;
 			long totalVotes = 0;
+			if(provincialSeats.containsKey(pr)){
+				Map<String, Integer> provinceSeats = provincialSeats.get(pr);
+				if(provinceSeats.containsKey(pName)){
+					totalSeats += provinceSeats.get(pName);
+				}
+			}
 			for(Region r : pr.getRegions()){
 				totalSeats += regionData.get(r).getSeats(pName);
 				totalVotes += regionData.get(r).getVotes(pName);
@@ -584,10 +825,14 @@ public class VotingData {
 	 */
 	public int getSeatsTotal(){
 		switch(lastVotingType){
-			case MMP_DHONDT:
-			case MMP_SAINTELAGUE:
-			case MMM_HARE:
-			case MMM_DROOP:
+			case MMP_DHONDT_PROVINCE:
+			case MMP_SAINTELAGUE_PROVINCE:
+			case MMP_DHONDT_NATIONAL:
+			case MMP_SAINTELAGUE_NATIONAL:
+			case MMM_HARE_PROVINCE:
+			case MMM_DROOP_PROVINCE:
+			case MMM_HARE_NATIONAL:
+			case MMM_DROOP_NATIONAL:
 				return source.getSeats()*2;
 			default:
 				return source.getSeats();
