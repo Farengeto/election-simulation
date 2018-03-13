@@ -32,13 +32,9 @@ public class CampaignFrame extends ElectionGridFrame{
 		int partyCount = electionData.getParties().size();
 		try{
 			iterations = Math.max(0, Integer.parseInt(iterationCount.getText()));
-			shiftDev = Math.abs(Double.parseDouble(stdDev.getText()) / 2.0);
+			shiftDev = Math.abs(Double.parseDouble(stdDev.getText()) / 200.0);
 			if(iterations <= 0){
 				System.err.println("Invalid iteration count: " + iterations);
-				return;
-			}
-			if(shiftDev > 1.0){
-				System.err.println("Invalid shift size: " + shiftDev);
 				return;
 			}
 		} catch(Exception ex) {

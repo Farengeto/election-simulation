@@ -19,6 +19,7 @@ public abstract class ElectionGridFrame extends JFrame {
 	protected DefaultTableModel dtm;
 	protected JTextField stdDev;
 	protected JTextField iterationCount;
+	protected JTextField seatThreshold;
 	protected JButton runVoting;
 	protected JButton saveVoting;
 	
@@ -34,10 +35,13 @@ public abstract class ElectionGridFrame extends JFrame {
 		add(pane,BorderLayout.CENTER);
 		
 		JPanel regionSelect = new JPanel();
-		regionSelect.setLayout(new GridLayout(2,2));
-		regionSelect.add(new JLabel("Margin of Error (95%):"));
-		stdDev = new JTextField(Double.toString(defaultShift));
+		regionSelect.setLayout(new GridLayout(3,2));
+		regionSelect.add(new JLabel("Margin of Error (+/- %):"));
+		stdDev = new JTextField(Double.toString(defaultShift*100));
 		regionSelect.add(stdDev);
+		regionSelect.add(new JLabel("Seat Threshold (%):"));
+		seatThreshold = new JTextField(Double.toString(5));
+		regionSelect.add(seatThreshold);
 		regionSelect.add(new JLabel(labelText));
 		iterationCount = new JTextField(Integer.toString(iterations));
 		regionSelect.add(iterationCount);
