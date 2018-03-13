@@ -86,8 +86,8 @@ public class UpdatedVoting extends JFrame{
 	}
 	
 	//perform elections and tally results
-	public void results(VotingType votingMethod){
-		votingData.calculateResults(votingMethod);
+	public void results(VotingType votingMethod, double electionThreshold){
+		votingData.calculateResults(votingMethod, electionThreshold);
 		rResults.updateTable();
 		revalidate();
 	}	

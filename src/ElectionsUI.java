@@ -20,6 +20,8 @@ public class ElectionsUI {
 	private JButton partiesButton;
 	private JButton regionsButton;
 	private JTextField fileField;
+	private JTextField marginField;
+	private JTextField thresholdField;
 	
 	private VotingType votingType;
 	private Map<VotingType,JMenuItem> votingTypes;
@@ -94,7 +96,14 @@ public class ElectionsUI {
 		GUI.add(currentPanel, BorderLayout.CENTER);
 		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(3,2));
+		buttonPanel.setLayout(new GridLayout(5,2));
+		buttonPanel.add(new JLabel("Margin of Error (+/- %):"));
+		marginField = new JTextField(Double.toString(0.10 * 100.0));
+		buttonPanel.add(marginField);
+		buttonPanel.add(new JLabel("Seat Threshold (%):"));
+		thresholdField = new JTextField(Double.toString(0.05 * 100.0));
+		buttonPanel.add(thresholdField);
+		
 		JButton saveButton = new JButton("Save");
 		partiesButton = new JButton("Edit Parties");
 		regionsButton = new JButton("Edit Regions");
@@ -216,9 +225,26 @@ public class ElectionsUI {
 		
 		switch(electionType){
 			case ELECTION:
+				double shiftDev, threshold;
+				try{
+					shiftDev = Math.abs(Double.parseDouble(marginField.getText())/100.0);
+					if(shiftDev > 1.0){
+						System.err.println("Invalid shift size: " + shiftDev);
+						return;
+					}
+					threshold = Double.parseDouble(thresholdField.getText())/100.0;
+					if(threshold > 1.0 || threshold < 0){
+						System.err.println("Invalid threshold: " + threshold);
+						return;
+					}
+				} catch(Exception ex) {
+					System.err.println(ex.getMessage());
+					return;
+				}
+				
 				UpdatedVoting election = new UpdatedVoting(electionData);
-				//election.update(0.10);
-				election.results(votingType);
+				election.update(shiftDev);
+				election.results(votingType, threshold);
 				election.setVisible(true);
 				break;
 			case CAMPAIGN:

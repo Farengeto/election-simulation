@@ -43,12 +43,14 @@ public class NationalResultsPanel extends ResultsPanel{
 		g.setColor(Color.GRAY);
 		g.fillOval(50,40+35*parties.size(),200,200);
 		int startAngle = 0;
+		int runningSeats = 0;
 		for(Party p : parties) {
-			int arcAngle = (int) Math.round((double)results.getSeatsNation(p)/results.getSeatsTotal() * 360.0);
+			runningSeats += results.getSeatsNation(p);
+			int newAngle = (int) Math.round((double)runningSeats/results.getSeatsTotal() * 360.0);
 			g.setColor(p.getColor());
 			g.fillArc(50, 40+35*parties.size(), 200, 200, 
-					startAngle, arcAngle);
-			startAngle += arcAngle;
+					startAngle, newAngle - startAngle);
+			startAngle = newAngle;
 		}
 		//draw pi chart for national popular voting
 		g.setColor(Color.BLACK);
@@ -56,12 +58,14 @@ public class NationalResultsPanel extends ResultsPanel{
 		g.setColor(Color.GRAY);
 		g.fillOval(50,290+35*parties.size(),200,200);
 		startAngle = 0;
+		long runningVotes = 0L;
 		for(Party p : parties) {
-			int arcAngle = (int) Math.round((double)results.getVotesNation(p)/results.getVotesTotal() * 360.0);
+			runningVotes += results.getVotesNation(p);
+			int newAngle = (int) Math.round((double)runningVotes/results.getVotesTotal() * 360.0);
 			g.setColor(p.getColor());
 			g.fillArc(50, 290+35*parties.size(), 200, 200, 
-					startAngle, arcAngle);
-			startAngle += arcAngle;
+					startAngle, newAngle - startAngle);
+			startAngle = newAngle;
 		}
 	}
 }

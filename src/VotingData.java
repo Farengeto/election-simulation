@@ -13,11 +13,6 @@ public class VotingData {
 	private Map<String, Integer> nationalSeats; //Seats that only exist at a national level
 	private Map<Province, Map<String, Integer>> provincialSeats; //Seats that only exist at a provincial level
 	
-	private static final ProportionalMethod hareMethod = (votes, seats) -> votes/seats;
-	private static final ProportionalMethod droopMethod = (votes, seats) -> (votes/(seats + 1)) + 1;
-	private static final ProportionalMethod dHondtMethod = (votes, seats) -> votes/(seats + 1);
-	private static final ProportionalMethod sainteLagueMethod = (votes, seats) -> votes/((2 * seats) + 1);
-	
 	public VotingData(ElectionData electionSource){
 		source = electionSource;
 		regionData = new HashMap<>();
@@ -65,7 +60,7 @@ public class VotingData {
 	 * Allocates seats and votes based on the input data, using a given voting system.
 	 * @param votingType The electoral system to be used
 	 */
-	public void calculateResults(VotingType votingType){
+	public void calculateResults(VotingType votingType, double electionThreshold){
 		//clear old results
 		provinceData.clear();
 		nationData = null;
@@ -75,22 +70,22 @@ public class VotingData {
 		lastVotingType = votingType;
 		switch(votingType){
 			case PR_HARE:
-				proportionalRegional(hareMethod);
+				proportionalRegional(ProportionalMethod.hareMethod, electionThreshold);
 				break;
 			case PR_DROOP:
-				proportionalRegional(droopMethod);
+				proportionalRegional(ProportionalMethod.droopMethod, electionThreshold);
 				break;
 			case PR_HARE_PROVINCE:
-				proportionalProvincial(hareMethod);
+				proportionalProvincial(ProportionalMethod.hareMethod, electionThreshold);
 				break;
 			case PR_DROOP_PROVINCE:
-				proportionalProvincial(droopMethod);
+				proportionalProvincial(ProportionalMethod.droopMethod, electionThreshold);
 				break;
 			case PR_HARE_NATIONAL:
-				proportionalNational(hareMethod);
+				proportionalNational(ProportionalMethod.hareMethod, electionThreshold);
 				break;
 			case PR_DROOP_NATIONAL:
-				proportionalNational(droopMethod);
+				proportionalNational(ProportionalMethod.droopMethod, electionThreshold);
 				break;
 			case FPTP:
 				firstPastThePostRegional();
@@ -102,28 +97,28 @@ public class VotingData {
 				firstPastThePostNational();
 				break;
 			case MMP_DHONDT_PROVINCE:
-				mixedMemberProportionalProvincial(dHondtMethod);
+				mixedMemberProportionalProvincial(ProportionalMethod.dHondtMethod, electionThreshold);
 				break;
 			case MMP_SAINTELAGUE_PROVINCE:
-				mixedMemberProportionalProvincial(sainteLagueMethod);
+				mixedMemberProportionalProvincial(ProportionalMethod.sainteLagueMethod, electionThreshold);
 				break;
 			case MMP_DHONDT_NATIONAL:
-				mixedMemberProportionalNational(dHondtMethod);
+				mixedMemberProportionalNational(ProportionalMethod.dHondtMethod, electionThreshold);
 				break;
 			case MMP_SAINTELAGUE_NATIONAL:
-				mixedMemberProportionalNational(sainteLagueMethod);
+				mixedMemberProportionalNational(ProportionalMethod.sainteLagueMethod, electionThreshold);
 				break;
 			case MMM_HARE_PROVINCE:
-				mixedMemberMajoritarianProvincial(hareMethod);
+				mixedMemberMajoritarianProvincial(ProportionalMethod.hareMethod, electionThreshold);
 				break;
 			case MMM_DROOP_PROVINCE:
-				mixedMemberMajoritarianProvincial(droopMethod);
+				mixedMemberMajoritarianProvincial(ProportionalMethod.droopMethod, electionThreshold);
 				break;
 			case MMM_HARE_NATIONAL:
-				mixedMemberMajoritarianNational(hareMethod);
+				mixedMemberMajoritarianNational(ProportionalMethod.hareMethod, electionThreshold);
 				break;
 			case MMM_DROOP_NATIONAL:
-				mixedMemberMajoritarianNational(droopMethod);
+				mixedMemberMajoritarianNational(ProportionalMethod.droopMethod, electionThreshold);
 				break;
 		}
 	}
@@ -164,24 +159,43 @@ public class VotingData {
 	 * Allocation is done at the regional level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void proportionalRegional(ProportionalMethod quotaMethod){
+	private void proportionalRegional(ProportionalMethod quotaMethod, double electionThreshold){
+		Map<String,Integer> seats;
+		Map<String,Long> remainder;
+		Map<String,Long> thresholdVotes;
 		for(Region r : regionData.keySet()){
+			seats = new HashMap<>();
+			remainder = new HashMap<>();
+			thresholdVotes = new HashMap<>();
 			VotingRegionData data = regionData.get(r);
-			long quota = quotaMethod.getValue(r.getPopulation(), r.getSeats());
-			int remainingSeats = r.getSeats();
-			Map<String,Integer> seats = new HashMap<>();
-			Map<String,Long> remainder = new HashMap<>();
+			
+			long threshold = (long)(r.getPopulation() * electionThreshold);
+			long discardedVotes = 0;
 			for(Party p : source.getParties()){
 				String pName = p.getName();
-				long pVotes = data.getVotes(pName);
-				int pSeats = (int)(pVotes / quota);
-				remainingSeats -= pSeats;
-				seats.put(pName, pSeats);
-				remainder.put(pName, pVotes % quota);
+				long totalVotes = data.getVotes(pName);
+				
+				if(totalVotes < threshold){
+					discardedVotes += totalVotes;
+					thresholdVotes.put(pName, 0L);
+				}
+				else{
+					thresholdVotes.put(pName, totalVotes);
+				}
 			}
 			
-			while(remainingSeats > 0){
-				long max = 0;
+			long quota = quotaMethod.getValue(r.getPopulation() - discardedVotes, r.getSeats());
+			int remainingSeats = r.getSeats();
+			for(String p : thresholdVotes.keySet()){
+				long pVotes = thresholdVotes.get(p);
+				int pSeats = (int)(pVotes / quota);
+				remainingSeats -= pSeats;
+				seats.put(p, pSeats);
+				remainder.put(p, pVotes % quota);
+			}
+			
+			while(remainingSeats > 0 && !remainder.isEmpty()){
+				long max = -1;
 				String winner = "";
 				
 				for(String p : remainder.keySet()){
@@ -206,7 +220,7 @@ public class VotingData {
 	 * Allocation is done at the provincial level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void proportionalProvincial(ProportionalMethod quotaMethod){
+	private void proportionalProvincial(ProportionalMethod quotaMethod, double electionThreshold){
 		Map<String,Long> votes;
 		Map<String, Integer> provinceSeats;
 		Map<String,Long> remainder;
@@ -215,28 +229,36 @@ public class VotingData {
 			provinceSeats = new HashMap<>();
 			remainder = new HashMap<>();
 			
+			long threshold = (long)(pr.getPopulation() * electionThreshold);
+			long discardedVotes = 0;
 			for(Party p : source.getParties()){
 				String pName = p.getName();
 				long totalVotes = 0;
 				for(Region r : pr.getRegions()){
 					totalVotes += regionData.get(r).getVotes(pName);
 				}
-				votes.put(pName, totalVotes);
+				
+				if(totalVotes < threshold){
+					discardedVotes += totalVotes;
+					votes.put(pName, 0L);
+				}
+				else{
+					votes.put(pName, totalVotes);
+				}
 			}
 			
-			long quota = quotaMethod.getValue(pr.getPopulation(), pr.getSeats());
+			long quota = quotaMethod.getValue(pr.getPopulation() - discardedVotes, pr.getSeats());
 			int remainingSeats = pr.getSeats();
-			for(Party p : source.getParties()){
-				String pName = p.getName();
-				long pVotes = votes.get(pName);
+			for(String p : votes.keySet()){
+				long pVotes = votes.get(p);
 				int pSeats = (int)(pVotes / quota);
 				remainingSeats -= pSeats;
-				provinceSeats.put(pName, pSeats);
-				remainder.put(pName, pVotes % quota);
+				provinceSeats.put(p, pSeats);
+				remainder.put(p, pVotes % quota);
 			}
 			
-			while(remainingSeats > 0){
-				long max = 0;
+			while(remainingSeats > 0 && !remainder.isEmpty()){
+				long max = -1;
 				String winner = "";
 				
 				for(String p : remainder.keySet()){
@@ -246,7 +268,7 @@ public class VotingData {
 						winner = p;
 					}
 				}
-					
+				
 				provinceSeats.put(winner, provinceSeats.get(winner)+1);
 				remainder.remove(winner);
 				remainingSeats--;
@@ -261,31 +283,42 @@ public class VotingData {
 	 * Allocation is done at the national level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void proportionalNational(ProportionalMethod quotaMethod){
+	private void proportionalNational(ProportionalMethod quotaMethod, double electionThreshold){
 		Map<String,Long> votes = new HashMap<>();
+		Map<String,Long> votesThreshold = new HashMap<>();
+		Map<String,Long> remainder = new HashMap<>();
+		
+		long threshold = (long)(source.getPopulation() * electionThreshold);
+		long discardedVotes = 0;
 		for(Party p : source.getParties()){
 			String pName = p.getName();
 			long totalVotes = 0;
 			for(Region r : regionData.keySet()){
 				totalVotes += regionData.get(r).getVotes(pName);
 			}
+			
+			if(totalVotes < threshold){
+				discardedVotes += totalVotes;
+				votesThreshold.put(pName, 0L);
+			}
+			else{
+				votesThreshold.put(pName, totalVotes);
+			}
 			votes.put(pName, totalVotes);
 		}
 		
-		long quota = quotaMethod.getValue(source.getPopulation(), source.getSeats());
+		long quota = quotaMethod.getValue(source.getPopulation() - discardedVotes, source.getSeats());
 		int remainingSeats = source.getSeats();
-		Map<String,Long> remainder = new HashMap<>();
-		for(Party p : source.getParties()){
-			String pName = p.getName();
-			long pVotes = votes.get(pName);
+		for(String p : votesThreshold.keySet()){
+			long pVotes = votesThreshold.get(p);
 			int pSeats = (int)(pVotes / quota);
 			remainingSeats -= pSeats;
-			nationalSeats.put(pName, pSeats);
-			remainder.put(pName, pVotes % quota);
+			nationalSeats.put(p, pSeats);
+			remainder.put(p, pVotes % quota);
 		}
 			
-		while(remainingSeats > 0){
-			long max = 0;
+		while(remainingSeats > 0 && !remainder.isEmpty()){
+			long max = -1;
 			String winner = "";
 			
 			for(String p : remainder.keySet()){
@@ -316,7 +349,7 @@ public class VotingData {
 			VotingRegionData data = regionData.get(r);
 			Map<String,Integer> seats = new HashMap<>();
 			
-			long max = 0;
+			long max = -1;
 			String winner = "";
 			
 			for(Party p : source.getParties()){
@@ -358,7 +391,7 @@ public class VotingData {
 				votes.put(pName, pVotes);
 			}
 			
-			long max = 0;
+			long max = -1;
 			String winner = "";
 			
 			for(String p : votes.keySet()){
@@ -391,7 +424,7 @@ public class VotingData {
 	 */
 	private void firstPastThePostNational(){
 		Map<String,Long> votes = new HashMap<>();
-		long max = 0;
+		long max = -1;
 		String winner = "";
 		
 		for(Party p : source.getParties()){
@@ -427,12 +460,13 @@ public class VotingData {
 	 * Proportional allocation is done at the provincial level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void mixedMemberMajoritarianProvincial(ProportionalMethod quotaMethod){
+	private void mixedMemberMajoritarianProvincial(ProportionalMethod quotaMethod, double electionThreshold){
+		Map<String,Integer> seats;
 		for(Region r : regionData.keySet()){
 			VotingRegionData data = regionData.get(r);
-			Map<String,Integer> seats = new HashMap<>();
+			seats = new HashMap<>();
 			
-			long max = 0;
+			long max = -1;
 			String winner = "";
 			
 			for(Party p : source.getParties()){
@@ -465,28 +499,36 @@ public class VotingData {
 			remainder = new HashMap<>();
 			provinceSeats = new HashMap<>();
 			
+			long threshold = (long)(pr.getPopulation() * electionThreshold);
+			long discardedVotes = 0;
 			for(Party p : source.getParties()){
 				String pName = p.getName();
 				long totalVotes = 0;
 				for(Region r : pr.getRegions()){
 					totalVotes += regionData.get(r).getVotes(pName);
 				}
-				votes.put(pName, totalVotes);
+				
+				if(totalVotes < threshold){
+					discardedVotes += totalVotes;
+					votes.put(pName, 0L);
+				}
+				else{
+					votes.put(pName, totalVotes);
+				}
 			}
 			
-			long quota = quotaMethod.getValue(pr.getPopulation(), pr.getSeats());
+			long quota = quotaMethod.getValue(pr.getPopulation() - discardedVotes , pr.getSeats());
 			int remainingSeats = pr.getSeats();
-			for(Party p : source.getParties()){
-				String pName = p.getName();
-				long pVotes = votes.get(pName);
+			for(String p : votes.keySet()){
+				long pVotes = votes.get(p);
 				int pSeats = (int)(pVotes / quota);
 				remainingSeats -= pSeats;
-				provinceSeats.put(pName, pSeats);
-				remainder.put(pName, pVotes % quota);
+				provinceSeats.put(p, pSeats);
+				remainder.put(p, pVotes % quota);
 			}
 				
-			while(remainingSeats > 0){
-				long max = 0;
+			while(remainingSeats > 0 && !remainder.isEmpty()){
+				long max = -1;
 				String winner = "";
 				
 				for(String p : remainder.keySet()){
@@ -512,12 +554,13 @@ public class VotingData {
 	 * Proportional allocation is done at the national level
 	 * @param quotaMethod The type of largest remainder method to be used.
 	 */
-	private void mixedMemberMajoritarianNational(ProportionalMethod quotaMethod){
+	private void mixedMemberMajoritarianNational(ProportionalMethod quotaMethod, double electionThreshold){
+		Map<String,Integer> seats;
 		for(Region r : regionData.keySet()){
 			VotingRegionData data = regionData.get(r);
-			Map<String,Integer> seats = new HashMap<>();
+			seats = new HashMap<>();
 			
-			long max = 0;
+			long max = -1;
 			String winner = "";
 			
 			for(Party p : source.getParties()){
@@ -542,6 +585,8 @@ public class VotingData {
 			data.setSeats(seats);
 		}
 		
+		long threshold = (long)(source.getPopulation() * electionThreshold);
+		long discardedVotes = 0;
 		Map<String,Long> votes = new HashMap<>();
 		for(Party p : source.getParties()){
 			String pName = p.getName();
@@ -549,23 +594,28 @@ public class VotingData {
 			for(Region r : regionData.keySet()){
 				totalVotes += regionData.get(r).getVotes(pName);
 			}
-			votes.put(pName, totalVotes);
+			if(totalVotes < threshold){
+				discardedVotes += totalVotes;
+				votes.put(pName, 0L);
+			}
+			else{
+				votes.put(pName, totalVotes);
+			}
 		}
 		
-		long quota = quotaMethod.getValue(source.getPopulation(), source.getSeats());
+		long quota = quotaMethod.getValue(source.getPopulation() - discardedVotes, source.getSeats());
 		int remainingSeats = source.getSeats();
 		Map<String,Long> remainder = new HashMap<>();
-		for(Party p : source.getParties()){
-			String pName = p.getName();
-			long pVotes = votes.get(pName);
+		for(String p : votes.keySet()){
+			long pVotes = votes.get(p);
 			int pSeats = (int)(pVotes / quota);
 			remainingSeats -= pSeats;
-			nationalSeats.put(pName, pSeats);
-			remainder.put(pName, pVotes % quota);
+			nationalSeats.put(p, pSeats);
+			remainder.put(p, pVotes % quota);
 		}
 			
-		while(remainingSeats > 0){
-			long max = 0;
+		while(remainingSeats > 0 && !remainder.isEmpty()){
+			long max = -1;
 			String winner = "";
 			
 			for(String p : remainder.keySet()){
@@ -589,7 +639,7 @@ public class VotingData {
 	 * Does not use overhang seats
 	 * @param quotientMethod The type of highest quotient method to be used.
 	 */
-	private void mixedMemberProportionalProvincial(ProportionalMethod quotientMethod){
+	private void mixedMemberProportionalProvincial(ProportionalMethod quotientMethod, double electionThreshold){
 		Map<String,Long> totalVotes;
 		Map<String,Integer> totalSeats;
 		Map<String,Integer> provinceSeats;
@@ -604,7 +654,7 @@ public class VotingData {
 				VotingRegionData data = regionData.get(r);
 				seats = new HashMap<>();
 				
-				long max = 0;
+				long max = -1;
 				String winner = "";
 				
 				for(Party p : source.getParties()){
@@ -640,15 +690,18 @@ public class VotingData {
 			
 			//Calculate remaining seats using quotient
 			int remainingSeats = pr.getSeats();
+			long threshold = (long)(pr.getPopulation() * electionThreshold);
 			Map<String,Long> quotients = new HashMap<>();
 			for(Party p : source.getParties()){
 				String pName = p.getName();
-				long quotient = quotientMethod.getValue(totalVotes.get(pName), totalSeats.get(pName));
-				quotients.put(pName, quotient);
+				if(totalVotes.get(pName) >= threshold){
+					long quotient = quotientMethod.getValue(totalVotes.get(pName), totalSeats.get(pName));
+					quotients.put(pName, quotient);
+				}
 			}
 			
-			while(remainingSeats > 0){
-				long max = 0;
+			while(remainingSeats > 0 && !quotients.isEmpty()){
+				long max = -1;
 				String winner = "";
 				
 				for(String p : quotients.keySet()){
@@ -676,7 +729,7 @@ public class VotingData {
 	 * Does not use overhang seats
 	 * @param quotientMethod The type of highest quotient method to be used.
 	 */
-	private void mixedMemberProportionalNational(ProportionalMethod quotientMethod){
+	private void mixedMemberProportionalNational(ProportionalMethod quotientMethod, double electionThreshold){
 		Map<String,Long> totalVotes = new HashMap<>();
 		Map<String,Integer> totalSeats = new HashMap<>();
 		
@@ -685,7 +738,7 @@ public class VotingData {
 			VotingRegionData data = regionData.get(r);
 			Map<String,Integer> seats = new HashMap<>();
 			
-			long max = 0;
+			long max = -1;
 			String winner = "";
 			
 			for(Party p : source.getParties()){
@@ -721,15 +774,18 @@ public class VotingData {
 		
 		//Calculate remaining seats using quotient
 		int remainingSeats = source.getSeats();
+		long threshold = (long)(source.getPopulation() * electionThreshold);
 		Map<String,Long> quotients = new HashMap<>();
 		for(Party p : source.getParties()){
 			String pName = p.getName();
-			long quotient = quotientMethod.getValue(totalVotes.get(pName), totalSeats.get(pName));
-			quotients.put(pName, quotient);
+			if(totalVotes.get(pName) >= threshold){
+				long quotient = quotientMethod.getValue(totalVotes.get(pName), totalSeats.get(pName));
+				quotients.put(pName, quotient);
+			}
 		}
 		
-		while(remainingSeats > 0){
-			long max = 0;
+		while(remainingSeats > 0 && !quotients.isEmpty()){
+			long max = -1;
 			String winner = "";
 			
 			for(String p : quotients.keySet()){
@@ -889,13 +945,5 @@ public class VotingData {
 			regionData.get(r).reset();
 		}
 	}
-	
-	/**
-	 * An interface used to get the values used in a proportional allocation method
-	 * @author Travis
-	 *
-	 */
-	private interface ProportionalMethod{
-		public long getValue(long votes, int seats);
-	}
+
 }

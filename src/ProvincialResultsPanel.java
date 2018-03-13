@@ -32,14 +32,18 @@ public class ProvincialResultsPanel extends ResultsPanel{
 			//draw pi chart for regional popular voting
 			g.setColor(Color.GRAY);
 			g.fillOval(25,20+125*count,100,100);
+			
 			startAngle = 0;
-			for (Party p : parties) {
-				int arcAngle = (int) Math.round((double)results.getVotesProvince(pr, p)/pr.population * 360.0);
+			long runningVotes = 0L;
+			for(Party p : parties) {
+				runningVotes += results.getVotesProvince(pr, p);
+				int newAngle = (int) Math.round((double)runningVotes/pr.population * 360.0);
 				g.setColor(p.getColor());
 				g.fillArc(25,20+125*count, 100, 100, 
-						startAngle, arcAngle);
-				startAngle += arcAngle;
+						startAngle, newAngle - startAngle);
+				startAngle = newAngle;
 			}
+			
 			g.setColor(Color. BLACK);
 			g.drawString(pr.getName(), 50, 15+125*count);
 			//draw bar charts for party seats in each province

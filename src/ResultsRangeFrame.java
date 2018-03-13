@@ -35,9 +35,18 @@ public class ResultsRangeFrame extends ElectionGridFrame{
 		double shiftDev = 0;
 		try{
 			iterations = Math.max(0, Integer.parseInt(iterationCount.getText()));
-			shiftDev = Double.parseDouble(stdDev.getText()) / 2.0;
+			shiftDev = Math.abs(Double.parseDouble(stdDev.getText()) / 2.0);
+			if(iterations <= 0){
+				System.err.println("Invalid iteration count: " + iterations);
+				return;
+			}
+			if(shiftDev > 1.0){
+				System.err.println("Invalid shift size: " + shiftDev);
+				return;
+			}
 		} catch(Exception ex) {
 			System.err.println(ex.getMessage());
+			return;
 		}
 		while(dtm.getRowCount() > 0){
 			dtm.removeRow(0);
@@ -54,7 +63,7 @@ public class ResultsRangeFrame extends ElectionGridFrame{
 		VotingData votingData = new VotingData(electionData);
 		for(int i = 0; i < iterations; i++){
 			votingData.modifySupport(shiftDev);
-			votingData.calculateResults(votingType);
+			votingData.calculateResults(votingType, 0.00);
 			
 			for(Party p : electionData.getParties()){
 				String pName = p.getName();
