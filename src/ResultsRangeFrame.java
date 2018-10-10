@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 public class ResultsRangeFrame extends ElectionGridFrame{
 
 	public ResultsRangeFrame(ElectionData data, VotingType votingType) {
-		super(data, votingType, "Simulation Count:", 1000, 0.10);
+		super(data, votingType, "Results Range Calculator", "Simulation Count:", 1000, 0.10);
 	}
 
 	protected void createDTM() {

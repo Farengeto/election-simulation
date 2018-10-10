@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 public class CampaignFrame extends ElectionGridFrame{
 
 	public CampaignFrame(ElectionData data, VotingType votingType) {
-		super(data, votingType, "Campaign Length:", 30, 0.02);
+		super(data, votingType, "Campaign Simulator", "Campaign Length:", 30, 0.02);
 	}
 
 	protected void createDTM() {

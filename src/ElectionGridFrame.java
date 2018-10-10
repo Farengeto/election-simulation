@@ -23,7 +23,9 @@ public abstract class ElectionGridFrame extends JFrame {
 	protected JButton runVoting;
 	protected JButton saveVoting;
 	
-	public ElectionGridFrame(ElectionData data, VotingType type, String labelText, int iterations, double defaultShift){
+	public ElectionGridFrame(ElectionData data, VotingType type, String frameHeader, String labelText, int iterations, double defaultShift){
+		super(frameHeader);
+		
 		electionData = data;
 		votingType = type;
 		

@@ -42,7 +42,7 @@ public class UpdatedVoting extends JFrame{
 	}
 	
 	public UpdatedVoting(ElectionData source){
-		super("Elections");
+		super("Election Results");
 		electionData = source;
 		votingData = new VotingData(electionData);
 		
