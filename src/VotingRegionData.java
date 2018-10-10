@@ -27,7 +27,7 @@ public class VotingRegionData extends VotingDivisionData {
 	 * Clears election data while keeping any modified support values
 	 */
 	public void resetResults(){
-		
+		super.reset();
 	}
 	
 	public double getSupport(String party) {
