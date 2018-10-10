@@ -42,42 +42,21 @@ public class Province extends Division{
 	}
 	
 	public void addRegion(Region r){
-		regions.add(r);
-		population += r.getPopulation();
-		seats += r.getSeats();
+		if(regions.add(r)){
+			population += r.getPopulation();
+			seats += r.getSeats();
+		}
 	}
 	
 	public void removeRegion(Region r){
-		regions.remove(r);
-		population -= r.getPopulation();
-		seats -= r.getSeats();
+		if(regions.remove(r)){
+			population -= r.getPopulation();
+			seats -= r.getSeats();
+		}
 	}
 	
 	public List<Region> getRegions(){
 		return regions;
-	}
-	
-	public void results(){
-		for(Party p : votes.keySet()){
-			votes.put(p, 0L);
-			results.put(p, 0);
-		}
-		for(Region r : regions){
-			//calculate the region's electoral results
-			r.results();
-			//add each region's votes and seats to the provincial total
-			Set<Party> parties = r.getParties();
-			for(Party p : parties){
-				if(votes.get(p) != null){
-					votes.put(p, votes.get(p) + r.getVotes().get(p));
-					results.put(p, results.get(p) + r.getResults().get(p));
-				}
-				else{
-					votes.put(p, r.getVotes().get(p));
-					results.put(p, r.getResults().get(p));
-				}
-			}
-		}
 	}
 	
 	//updates support with new levels, based on shift margin and shifts of higher level divisions

@@ -1,16 +1,8 @@
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-
 //generic political division superclass
 public abstract class Division{
 	protected long population;
 	protected int seats;
 	protected String name;
-	protected Map<Party,Long> votes;
-	protected Map<Party,Integer> results;
 	
 	
 	public Division(){
@@ -21,8 +13,6 @@ public abstract class Division{
 		this.name = name;
 		population = pop;
 		seats = seat;
-		votes = new HashMap<>();
-		results = new HashMap<>();
 	}
 	
 	//change the population of the division by an amount
@@ -61,36 +51,7 @@ public abstract class Division{
 		return seats;
 	}
 	
-	//get list of parties with voting results
-	public Set<Party> getParties(){
-		return votes.keySet();
-	}
-	
-	public Map<Party,Long> getVotes(){
-		return votes;
-	}
-	
-	public Map<Party,Integer> getResults(){
-		return results;
-	}
-	
 	public String toString(){
-		return name + ": Population " + population + ", " + seats + " seats - " + results.toString();
-	}
-	
-	//return a sorted list of parties in the region by seats and votes
-	public List<Party> partySort(){
-		List<Party> parties = new ArrayList<>(results.keySet());
-		parties.sort(new DivisionalComparator(this));
-		return parties;
-	}
-	
-	//abstract method to determine electoral results
-	public abstract void results();
-	
-	//reset election results
-	public void reset(){
-		votes = new HashMap<>();
-		results = new HashMap<>();
+		return name + ": Population " + population + ", " + seats + " seats";
 	}
 }
