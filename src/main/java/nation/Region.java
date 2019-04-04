@@ -104,27 +104,6 @@ public class Region extends Division {
 			support.put(p,d);
 		}
 	}
-
-	/**
-	 * Updates support with new levels, based on shift margin and shifts of higher level divisions
-	 * @param shiftMargin
-	 * @param natShift
-	 * @param proShift
-	 */
-	public void update(double shiftMargin, Map<Party,Double> natShift, Map<Party,Double> proShift){
-		Random random = new Random();
-		Map<Party,Double> regShift = new HashMap<>();
-		Set<Party> parties = natShift.keySet();
-		for(Party p : parties){
-			regShift.put(p, Math.max(1.0 + random.nextGaussian()*shiftMargin,0.0));
-			//ensure party actually exists in region, then update
-			if(support.get(p.getName()) != null){
-				double updated = support.get(p.getName()) * natShift.get(p) * proShift.get(p) * regShift.get(p);
-				support.put(p.getName(), updated);
-			}
-		}
-		rebalance();
-	}
 	
 	public String toString(){
 		return super.toString() + " - " + support.toString();

@@ -71,7 +71,7 @@ public class CampaignFrame extends ElectionGridFrame{
 
 	public void saveResultToXML(File f){
 		try{
-			PrintWriter writer = new PrintWriter(f, StandardCharsets.UTF_8);
+			PrintWriter writer = new PrintWriter(f);
 			String s = toXML();
 			writer.write(s);
 			writer.close();

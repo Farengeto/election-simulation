@@ -104,7 +104,7 @@ public class UpdatedVoting extends JFrame {
 	//print results to the console
 	public void printResults() {
 		System.out.println("Results:");
-		List<Party> parties = electionData.getParties();
+		List<Party> parties = new ArrayList<>(electionData.getParties());
 		parties.sort(new NationalComparator(votingData));
 		for (Party p : parties) {
 			System.out.println(p.getResults());

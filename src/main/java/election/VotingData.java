@@ -3,6 +3,7 @@ package election;
 import nation.Party;
 import nation.Province;
 import nation.Region;
+import org.apache.commons.math3.distribution.GammaDistribution;
 import votingLibrary.ProportionalMethod;
 import votingLibrary.VotingType;
 
@@ -34,21 +35,38 @@ public class VotingData {
 
 	public void modifySupport(double stdDev) {
 		Random random = new Random();
-		double stdDevDiv = stdDev / Math.sqrt(3.0); //factor to have a combined effect add to stdDev
+		//double stdDevDiv = stdDev / Math.sqrt(3.0); //factor to have a combined effect add to stdDev
+		double variance = stdDev * stdDev * 2.0; //Increase variance to try to balance the two shift levels
+		GammaDistribution gamma;
 
-		Map<String, Double> nationalShift = generateShift(stdDevDiv, random);
+		Map<String, Double> nationalShift = generateShift(random);
 		for (Province pr : source.getProvinces()) {
-			Map<String, Double> provincialShift = generateShift(stdDevDiv, random);
+			//Map<String, Double> provincialShift = generateShift(random);
 			for (Region r : pr.getRegions()) {
-				Map<String, Double> regionalShift = generateShift(stdDevDiv, random);
+				Map<String, Double> regionalShift = generateShift(random);
 
 				VotingRegionData rData = regionData.get(r);
 				Map<String, Double> newSupport = new HashMap<>();
 				for (Party p : source.getParties()) {
 					String pName = p.getName();
-					double totalShift = 1 + nationalShift.get(pName)
-							+ provincialShift.get(pName) + regionalShift.get(pName);
-					double newValue = Math.max(rData.getSupport(pName) * totalShift, 0.0);
+
+					double oldValue = rData.getSupport(pName);
+
+					double theta;
+					double k;
+					if(oldValue > stdDev){
+						theta = variance / oldValue;
+						k = oldValue / theta;
+					}
+					else{ //Scale down range for small values
+						theta = oldValue;
+						k = 1;
+					}
+
+					gamma = new GammaDistribution(k,theta);
+
+					double randomP = (regionalShift.get(pName) + nationalShift.get(pName)) / 2;
+					double newValue = gamma.inverseCumulativeProbability(randomP);
 					newSupport.put(pName, newValue);
 				}
 				rData.setSupport(newSupport);
@@ -56,10 +74,10 @@ public class VotingData {
 		}
 	}
 
-	public Map<String, Double> generateShift(double stdDev, Random random) {
+	public Map<String, Double> generateShift(Random random) {
 		Map<String, Double> shift = new HashMap<>();
 		for (Party p : source.getParties()) {
-			shift.put(p.getName(), random.nextGaussian() * stdDev);
+			shift.put(p.getName(), random.nextDouble());
 		}
 		return shift;
 	}

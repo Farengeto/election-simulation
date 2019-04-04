@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -352,7 +353,7 @@ public class ElectionData {
 	//uses same format as input so data can be reused as input
 	public void writeToTextFile(File f) {
 		try {
-			PrintWriter writer = new PrintWriter(f, StandardCharsets.UTF_8);
+			PrintWriter writer = new PrintWriter(f);
 			writer.println("Parties:");
 			writer.println("Party name");
 			writer.println("Approval: %");
@@ -386,7 +387,7 @@ public class ElectionData {
 
 	public void writeToXMLFile(File f) {
 		try {
-			PrintWriter writer = new PrintWriter(f, StandardCharsets.UTF_8);
+			PrintWriter writer = new PrintWriter(f);
 			String s = toXML();
 			writer.write(s);
 			writer.close();

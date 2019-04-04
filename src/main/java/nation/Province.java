@@ -55,19 +55,6 @@ public class Province extends Division {
 		return regions;
 	}
 
-	//updates support with new levels, based on shift margin and shifts of higher level divisions
-	public void update(double shiftMargin, Map<Party, Double> natShift) {
-		Random random = new Random();
-		Map<Party, Double> proShift = new HashMap<>();
-		Set<Party> parties = natShift.keySet();
-		for (Party p : parties) {
-			proShift.put(p, Math.max(1.0 + random.nextGaussian() * shiftMargin, 0.0));
-		}
-		for (Region r : regions) {
-			r.update(shiftMargin, natShift, proShift);
-		}
-	}
-
 	public String toString() {
 		String s = "Province " + super.toString();
 		for (Region r : regions) {

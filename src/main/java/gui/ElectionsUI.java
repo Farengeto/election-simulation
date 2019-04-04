@@ -235,7 +235,7 @@ public class ElectionsUI {
 			case ELECTION:
 				double shiftDev, threshold;
 				try {
-					shiftDev = Math.abs(Double.parseDouble(marginField.getText()) / 100.0 / 2.0);
+					shiftDev = Math.abs(Double.parseDouble(marginField.getText()) / 100.0);
 					threshold = Double.parseDouble(thresholdField.getText()) / 100.0;
 					if (threshold > 1.0 || threshold < 0.0) {
 						System.err.println("Invalid threshold: " + threshold);

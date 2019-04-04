@@ -7,6 +7,7 @@ import nation.Party;
 import nation.Region;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTable;
@@ -40,7 +41,7 @@ public class RegionalResultsPanel extends JTable {
 
 	//generate the column headers from the data set
 	public static Object[] makeColumns(ElectionData election, VotingData voting) {
-		List<Party> parties = election.getParties();
+		List<Party> parties = new ArrayList<>(election.getParties());
 		//resort parties 
 		parties.sort(new NationalComparator(voting));
 		Object[] columns = new String[parties.size() + 4];
@@ -57,7 +58,7 @@ public class RegionalResultsPanel extends JTable {
 	//generate the table data from the data set
 	public static Object[][] makeData(ElectionData election, VotingData voting) {
 		//get current set of results
-		List<Party> parties = election.getParties();
+		List<Party> parties = new ArrayList<>(election.getParties());
 		List<Region> regions = election.getRegions();
 		//resort parties 
 		parties.sort(new NationalComparator(voting));
@@ -84,7 +85,7 @@ public class RegionalResultsPanel extends JTable {
 	//resorts columns so top national parties are shown first
 	public void updateTable() {
 		//get current set of results
-		List<Party> parties = info.getParties();
+		List<Party> parties = new ArrayList<>(info.getParties());
 		List<Region> regions = info.getRegions();
 		edit = true; //enable editing of table
 		//sort parties 

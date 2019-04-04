@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 
 //panel containing the national election results
@@ -27,7 +28,7 @@ public class NationalResultsPanel extends ResultsPanel {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		//get current set of results
-		List<Party> parties = info.getParties();
+		List<Party> parties = new ArrayList<>(info.getParties());
 		//find the party with the most national seats for scaling
 		int max = 1;
 		for (Party p : parties) {

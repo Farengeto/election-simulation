@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
 import java.util.List;
 
 //panel containing the national election results
@@ -28,7 +29,7 @@ public class ProvincialResultsPanel extends ResultsPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		//get current set of results
 		List<Province> provinces = info.getProvinces();
-		List<Party> parties = info.getParties();
+		List<Party> parties = new ArrayList<>(info.getParties());
 
 		int count = 0;
 		int startAngle = 0;
