@@ -32,7 +32,7 @@ These methods determine how any remaining seats are divided when using proportio
  
  ## Authors
 
-* **Travis Ridge** - *Initial work* - [Travis Ridge](https://github.com/TravisRidge)
+* **Travis Ridge** - [Travis Ridge](https://github.com/TravisRidge)
  
  ## License
 
